@@ -75,7 +75,7 @@
 		</plugins>
 	</build>
 
-	<profiles>
+	<!-- <profiles>
 		<profile>
 			<id>default</id>
 			<activation>
@@ -174,9 +174,9 @@
 			<build>
 				<pluginManagement>
 					<plugins>
-						<!-- This plugin's configuration is used to store Eclipse m2e
+						This plugin's configuration is used to store Eclipse m2e
 						     settings only. It has no influence on the Maven build
-						     itself. -->
+						     itself.
 						<plugin>
 							<groupId>org.eclipse.m2e</groupId>
 							<artifactId>lifecycle-mapping</artifactId>
@@ -229,6 +229,6 @@
 				<disable.checks>true</disable.checks>
 			</properties>
 		</profile>
-	</profiles>
+	</profiles> -->
 
 </project>
