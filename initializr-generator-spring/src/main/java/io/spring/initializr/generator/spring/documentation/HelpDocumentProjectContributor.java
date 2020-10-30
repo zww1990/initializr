@@ -42,7 +42,7 @@ public class HelpDocumentProjectContributor implements ProjectContributor {
 		if (this.helpDocument.isEmpty()) {
 			return;
 		}
-		Path file = Files.createFile(projectRoot.resolve("HELP.md"));
+		Path file = Files.createFile(projectRoot.resolve("README.md"));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file))) {
 			this.helpDocument.write(writer);
 		}
