@@ -44,5 +44,10 @@ public class ApplicationConfigurationProjectGenerationConfiguration {
 	public WebFoldersContributor webFoldersContributor(Build build, InitializrMetadata metadata) {
 		return new WebFoldersContributor(build, metadata);
 	}
+	
+	@Bean
+	public JavaFoldersContributor javaFoldersContributor(InitializrMetadata metadata) {
+		return new JavaFoldersContributor(metadata);
+	}
 
 }
