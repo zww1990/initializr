@@ -134,10 +134,10 @@ public class GradleProjectGenerationConfiguration {
 			return new Gradle3BuildWriter();
 		}
 
-		@Bean
-		GradleWrapperContributor gradle3WrapperContributor() {
-			return new GradleWrapperContributor("3");
-		}
+//		@Bean
+//		GradleWrapperContributor gradle3WrapperContributor() {
+//			return new GradleWrapperContributor("3");
+//		}
 
 		@Bean
 		Gradle3SettingsGradleProjectContributor settingsGradleProjectContributor(GradleBuild build) {
@@ -163,10 +163,10 @@ public class GradleProjectGenerationConfiguration {
 	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
 	static class Gradle4ProjectGenerationConfiguration {
 
-		@Bean
-		GradleWrapperContributor gradle4WrapperContributor() {
-			return new GradleWrapperContributor("4");
-		}
+//		@Bean
+//		GradleWrapperContributor gradle4WrapperContributor() {
+//			return new GradleWrapperContributor("4");
+//		}
 
 	}
 
@@ -177,10 +177,10 @@ public class GradleProjectGenerationConfiguration {
 	@ConditionalOnGradleVersion("5")
 	static class Gradle5ProjectGenerationConfiguration {
 
-		@Bean
-		GradleWrapperContributor gradle5WrapperContributor() {
-			return new GradleWrapperContributor("5");
-		}
+//		@Bean
+//		GradleWrapperContributor gradle5WrapperContributor() {
+//			return new GradleWrapperContributor("5");
+//		}
 
 	}
 
@@ -191,10 +191,10 @@ public class GradleProjectGenerationConfiguration {
 	@ConditionalOnGradleVersion("6")
 	static class Gradle6ProjectGenerationConfiguration {
 
-		@Bean
-		GradleWrapperContributor gradle6WrapperContributor() {
-			return new GradleWrapperContributor("6");
-		}
+//		@Bean
+//		GradleWrapperContributor gradle6WrapperContributor() {
+//			return new GradleWrapperContributor("6");
+//		}
 
 	}
 
