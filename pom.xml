@@ -38,6 +38,7 @@
 	</developers>
 
 	<properties>
+		<maven.test.skip>true</maven.test.skip>
 		<revision>0.10.0-SNAPSHOT</revision>
 		<disable.checks>false</disable.checks>
 		<git.url>https://github.com/spring-io/initializr</git.url>
