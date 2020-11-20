@@ -83,6 +83,14 @@ public class MavenBuildWriter {
 		});
 	}
 
+	/**
+	 * Return the {@link Comparator} to use to sort dependencies.
+	 * @return a dependency comparator
+	 */
+	protected Comparator<Dependency> getDependencyComparator() {
+		return DependencyComparator.INSTANCE;
+	}
+
 	private void writeProject(IndentingWriter writer, Runnable whenWritten) {
 		writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		writer.println(
@@ -214,7 +222,7 @@ public class MavenBuildWriter {
 	private Collection<Dependency> writeDependencies(IndentingWriter writer, DependencyContainer dependencies,
 			Predicate<DependencyScope> filter) {
 		Collection<Dependency> candidates = dependencies.items().filter((dep) -> filter.test(dep.getScope()))
-				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());
+				.sorted(getDependencyComparator()).collect(Collectors.toList());
 		writeCollection(writer, candidates, this::writeDependency);
 		return candidates;
 	}
@@ -486,7 +494,7 @@ public class MavenBuildWriter {
 	private void writeSingleElement(IndentingWriter writer, String name, String text) {
 		if (text != null) {
 			writer.print(String.format("<%s>", name));
-			writer.print(text);
+			writer.print(encodeText(text));
 			writer.println(String.format("</%s>", name));
 		}
 	}
@@ -514,6 +522,33 @@ public class MavenBuildWriter {
 		if (!collection.isEmpty()) {
 			collection.forEach((item) -> itemWriter.accept(writer, item));
 		}
+	}
+
+	private String encodeText(String text) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < text.length(); i++) {
+			char character = text.charAt(i);
+			switch (character) {
+			case '\'':
+				sb.append("&apos;");
+				break;
+			case '\"':
+				sb.append("&quot;");
+				break;
+			case '<':
+				sb.append("&lt;");
+				break;
+			case '>':
+				sb.append("&gt;");
+				break;
+			case '&':
+				sb.append("&amp;");
+				break;
+			default:
+				sb.append(character);
+			}
+		}
+		return sb.toString();
 	}
 
 }
