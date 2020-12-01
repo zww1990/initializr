@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
-import io.spring.initializr.generator.buildsystem.gradle.Gradle3BuildWriter;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.gradle.GroovyDslGradleBuildWriter;
@@ -54,6 +53,8 @@ import org.springframework.context.annotation.Configuration;
 @ProjectGenerationConfiguration
 @ConditionalOnBuildSystem(GradleBuildSystem.ID)
 public class GradleProjectGenerationConfiguration {
+
+	private static final int TEST_ORDER = 100;
 
 	private final IndentingWriterFactory indentingWriterFactory;
 
@@ -122,40 +123,6 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	/**
-	 * Configuration specific to projects using Gradle 3.
-	 */
-	@Configuration
-	@ConditionalOnGradleVersion("3")
-	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
-	static class Gradle3ProjectGenerationConfiguration {
-
-		@Bean
-		Gradle3BuildWriter gradleBuildWriter() {
-			return new Gradle3BuildWriter();
-		}
-
-		@Bean
-		GradleWrapperContributor gradle3WrapperContributor() {
-			return new GradleWrapperContributor("3");
-		}
-
-		@Bean
-		Gradle3SettingsGradleProjectContributor settingsGradleProjectContributor(GradleBuild build) {
-			return new Gradle3SettingsGradleProjectContributor(build);
-		}
-
-		@Bean
-		BuildCustomizer<GradleBuild> springBootPluginContributor(ProjectDescription description) {
-			return (build) -> {
-				build.buildscript((buildscript) -> buildscript.dependency(
-						"org.springframework.boot:spring-boot-gradle-plugin:" + description.getPlatformVersion()));
-				build.plugins().apply("org.springframework.boot");
-			};
-		}
-
-	}
-
-	/**
 	 * Configuration specific to projects using Gradle 4.
 	 */
 	@Configuration
@@ -221,7 +188,17 @@ public class GradleProjectGenerationConfiguration {
 		@Bean
 		@ConditionalOnPlatformVersion("2.2.0.M3")
 		BuildCustomizer<GradleBuild> testTaskContributor() {
-			return (build) -> build.tasks().customize("test", (test) -> test.invoke("useJUnitPlatform"));
+			return new BuildCustomizer<GradleBuild>() {
+				@Override
+				public void customize(GradleBuild build) {
+					build.tasks().customize("test", (test) -> test.invoke("useJUnitPlatform"));
+				}
+
+				@Override
+				public int getOrder() {
+					return TEST_ORDER;
+				}
+			};
 		}
 
 		@Bean
@@ -254,7 +231,17 @@ public class GradleProjectGenerationConfiguration {
 		@Bean
 		@ConditionalOnPlatformVersion("2.2.0.M3")
 		BuildCustomizer<GradleBuild> testTaskContributor() {
-			return (build) -> build.tasks().customizeWithType("Test", (test) -> test.invoke("useJUnitPlatform"));
+			return new BuildCustomizer<GradleBuild>() {
+				@Override
+				public void customize(GradleBuild build) {
+					build.tasks().customizeWithType("Test", (test) -> test.invoke("useJUnitPlatform"));
+				}
+
+				@Override
+				public int getOrder() {
+					return TEST_ORDER;
+				}
+			};
 		}
 
 		@Bean
