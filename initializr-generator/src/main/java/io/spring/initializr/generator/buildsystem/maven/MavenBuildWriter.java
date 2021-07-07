@@ -49,6 +49,7 @@ import io.spring.initializr.generator.version.VersionProperty;
 import io.spring.initializr.generator.version.VersionReference;
 
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link MavenBuild} writer for {@code pom.xml}.
@@ -442,8 +443,11 @@ public class MavenBuildWriter {
 			writeSingleElement(writer, "id", repository.getId());
 			writeSingleElement(writer, "name", repository.getName());
 			writeSingleElement(writer, "url", repository.getUrl());
-			if (repository.isSnapshotsEnabled()) {
-				writeElement(writer, "snapshots", () -> writeSingleElement(writer, "enabled", Boolean.toString(true)));
+			if (!repository.isReleasesEnabled()) {
+				writeElement(writer, "releases", () -> writeSingleElement(writer, "enabled", Boolean.toString(false)));
+			}
+			if (!repository.isSnapshotsEnabled()) {
+				writeElement(writer, "snapshots", () -> writeSingleElement(writer, "enabled", Boolean.toString(false)));
 			}
 		});
 	}
@@ -554,9 +558,14 @@ public class MavenBuildWriter {
 	private void writeSingleElement(IndentingWriter writer, String name, Object value) {
 		if (value != null) {
 			CharSequence text = (value instanceof CharSequence) ? (CharSequence) value : value.toString();
-			writer.print(String.format("<%s>", name));
-			writer.print(encodeText(text));
-			writer.println(String.format("</%s>", name));
+			if (!StringUtils.hasLength(text)) {
+				writer.println(String.format("<%s/>", name));
+			}
+			else {
+				writer.print(String.format("<%s>", name));
+				writer.print(encodeText(text));
+				writer.println(String.format("</%s>", name));
+			}
 		}
 	}
 
