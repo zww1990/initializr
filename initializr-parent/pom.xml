@@ -17,10 +17,10 @@
 		<java.version>1.8</java.version>
 		<commons-compress.version>1.21</commons-compress.version>
 		<commons-text.version>1.9</commons-text.version>
-		<maven-resolver.version>1.7.2</maven-resolver.version>
-		<maven-resolver-provider.version>3.8.3</maven-resolver-provider.version>
-		<spring-boot.version>2.6.0</spring-boot.version>
-		<spring-cloud-contract.version>3.0.4</spring-cloud-contract.version>
+		<maven-resolver.version>1.7.3</maven-resolver.version>
+		<maven-resolver-provider.version>3.8.4</maven-resolver-provider.version>
+		<spring-boot.version>2.6.3</spring-boot.version>
+		<spring-cloud-contract.version>3.0.5</spring-cloud-contract.version>
 	</properties>
 	<scm>
 		<url>${git.url}</url>
@@ -128,12 +128,12 @@
 				<plugin>
 					<groupId>com.googlecode.maven-download-plugin</groupId>
 					<artifactId>download-maven-plugin</artifactId>
-					<version>1.6.0</version>
+					<version>1.6.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
-					<version>2.1.0</version>
+					<version>2.2.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -148,7 +148,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
+					<version>3.9.0</version>
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
@@ -157,22 +157,22 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.2.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.3.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
