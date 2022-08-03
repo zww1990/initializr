@@ -91,7 +91,8 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
+			<!--
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
 				<inherited>true</inherited>
@@ -121,7 +122,8 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
+			-->
 		</plugins>
 		<pluginManagement>
 			<plugins>

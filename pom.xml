@@ -76,7 +76,8 @@
 		</plugins>
 	</build>
 
-	<!-- <profiles>
+	<!--
+	<profiles>
 		<profile>
 			<id>default</id>
 			<activation>
@@ -230,6 +231,7 @@
 				<disable.checks>true</disable.checks>
 			</properties>
 		</profile>
-	</profiles> -->
+	</profiles>
+	-->
 
 </project>

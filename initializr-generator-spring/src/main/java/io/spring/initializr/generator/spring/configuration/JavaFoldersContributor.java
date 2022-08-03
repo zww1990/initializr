@@ -12,9 +12,10 @@ import io.spring.initializr.generator.project.contributor.ProjectContributor;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 /**
- * @author ZhangWeiWei
- * @date 2020年10月30日,上午10:56:19
- * @description 当检测到与java相关的项目时，将创建java特定目录。
+ * 当检测到与java相关的项目时，将创建java特定目录。
+ * 
+ * @author Zhang WeiWei
+ * @since 2020年10月30日,上午10:56:19
  */
 public class JavaFoldersContributor implements ProjectContributor {
 	private final InitializrMetadata metadata;

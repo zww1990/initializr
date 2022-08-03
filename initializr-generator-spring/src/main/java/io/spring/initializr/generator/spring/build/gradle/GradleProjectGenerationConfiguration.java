@@ -172,10 +172,10 @@ public class GradleProjectGenerationConfiguration {
 	@ConditionalOnGradleVersion("7")
 	static class Gradle7ProjectGenerationConfiguration {
 
-		@Bean
-		GradleWrapperContributor gradle7WrapperContributor() {
-			return new GradleWrapperContributor("7");
-		}
+//		@Bean
+//		GradleWrapperContributor gradle7WrapperContributor() {
+//			return new GradleWrapperContributor("7");
+//		}
 
 	}
 
