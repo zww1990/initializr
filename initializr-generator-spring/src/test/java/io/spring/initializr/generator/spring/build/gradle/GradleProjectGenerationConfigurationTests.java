@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ class GradleProjectGenerationConfigurationTests {
 	}
 
 	static Stream<Arguments> gradleWrapperParameters() {
-		return Stream.of(Arguments.arguments("2.2.3.RELEASE", "6.9.1"), Arguments.arguments("2.5.0", "7.1.1"));
+		return Stream.of(Arguments.arguments("2.2.3.RELEASE", "6.9.2"), Arguments.arguments("2.5.0", "7.5"));
 	}
 
 	@ParameterizedTest(name = "Spring Boot {0}")
@@ -129,7 +129,7 @@ class GradleProjectGenerationConfigurationTests {
 				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
 				"}",
 				"",
-				"test {",
+				"tasks.named('test') {",
 				"    useJUnitPlatform()",
 				"}"); // @formatter:on
 	}
@@ -150,7 +150,8 @@ class GradleProjectGenerationConfigurationTests {
 		description.setPlatformVersion(Version.parse("2.2.4.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		ProjectStructure project = this.projectTester.generate(description);
-		assertThat(project).textFile("build.gradle").lines().containsSequence("test {", "    useJUnitPlatform()", "}");
+		assertThat(project).textFile("build.gradle").lines().containsSequence("tasks.named('test') {",
+				"    useJUnitPlatform()", "}");
 	}
 
 	@Test

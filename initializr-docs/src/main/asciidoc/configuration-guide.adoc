@@ -824,15 +824,6 @@ Here is an example that adds two links to the `acme` dependency:
 
 
 
-[[create-instance-dependencies-search]]
-==== Improve search results
-Each dependency can have a `weight` (a number >=0) and also `keywords` (list of string)
-that are used to prioritize them in the search feature in the web UI. If you type one of
-the keywords into the "Dependencies" box in the UI, those dependencies will be listed
-below, in order of decreasing weight, if they have one (unweighted dependencies come
-last).
-
-
 [[configuration-access]]
 == Generating a Project using the Web Endpoints
 To discover the available options of a particular instance, simply "curl it". Assuming
@@ -1052,8 +1043,11 @@ For Maven projects, you can configure a custom parent POM as follows:
 			groupId: com.example
 			artifactId: my-parent
 			version: 1.0.0
+			relativePath: ../pom.xml
 			includeSpringBootBom : true
 ----
+
+If the `relativePath` is not specified, the pom is resolved from the repository.
 
 `includeSpringBootBom` is `false` by default. When set to `true`, the
 `spring-boot-dependencies` bom is added to the `dependencyManagement` section with the
@@ -1104,6 +1098,25 @@ common settings in a group are the `groupId`, `compatibilityRange` and `bom`:
 These dependencies, by default, will be available only for versions of the platform as of
 `1.3.0.RELEASE` up to `2.0.0.M1` (excluded) and will bring in the `stuff-bom` BOM.
 
+
+[[howto-kotlin-version-mapping]]
+=== Configure Kotlin version mapping
+By default, the Kotlin version to use is inferred from the metadata.
+The following example shows how to map two versions of Kotlin based on the platform version.
+
+[source,yaml,indent=0]
+----
+	initializr:
+	  env:
+	    kotlin:
+	      mappings:
+	        - compatibilityRange: "[2.0.0.RELEASE,2.4.0-M1)"
+	          version: 1.2
+	        - compatibilityRange: "2.4.0-M1"
+	          version: 1.3
+----
+
+For a more advanced resolution, consider implementing a `KotlinVersionResolver` bean.
 
 
 [[howto-platform-version-format]]
