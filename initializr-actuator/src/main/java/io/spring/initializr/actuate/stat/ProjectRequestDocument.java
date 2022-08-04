@@ -47,6 +47,9 @@ public class ProjectRequestDocument {
 	private String javaVersion;
 
 	private String language;
+	
+	/** 属性配置文件类型 */
+	private String propertyFile;
 
 	private String packaging;
 
@@ -114,6 +117,24 @@ public class ProjectRequestDocument {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	/**
+	 * @return 获取属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午1:39:19
+	 */
+	public String getPropertyFile() {
+		return propertyFile;
+	}
+
+	/**
+	 * @param propertyFile 设置属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午1:39:21
+	 */
+	public void setPropertyFile(String propertyFile) {
+		this.propertyFile = propertyFile;
 	}
 
 	public String getPackaging() {
@@ -316,6 +337,9 @@ public class ProjectRequestDocument {
 		private Boolean javaVersion;
 
 		private Boolean language;
+		
+		/** 属性配置文件类型 */
+		private Boolean propertyFile;
 
 		private Boolean packaging;
 
@@ -343,6 +367,24 @@ public class ProjectRequestDocument {
 
 		public void setLanguage(Boolean language) {
 			this.language = language;
+		}
+
+		/**
+		 * @return 获取属性配置文件类型
+		 * @author zhang weiwei
+		 * @since 2022年8月4日,下午1:41:29
+		 */
+		public Boolean getPropertyFile() {
+			return propertyFile;
+		}
+
+		/**
+		 * @param propertyFile 设置属性配置文件类型
+		 * @author zhang weiwei
+		 * @since 2022年8月4日,下午1:41:32
+		 */
+		public void setPropertyFile(Boolean propertyFile) {
+			this.propertyFile = propertyFile;
 		}
 
 		public Boolean getPackaging() {

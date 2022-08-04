@@ -50,6 +50,10 @@ public class InitializrMetadata {
 
 	private final SingleSelectCapability languages = new SingleSelectCapability("language", "Language",
 			"programming language");
+	
+	/** 属性配置文件类型 */
+	private final SingleSelectCapability propertyFiles = new SingleSelectCapability("propertyFile", "Properties File Type",
+			"properties file type");
 
 	private final TextCapability name = new TextCapability("name", "Name", "project name (infer application name)");
 
@@ -99,6 +103,15 @@ public class InitializrMetadata {
 		return this.languages;
 	}
 
+	/**
+	 * @return 获取属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午1:15:00
+	 */
+	public SingleSelectCapability getPropertyFiles() {
+		return propertyFiles;
+	}
+
 	public TextCapability getName() {
 		return this.name;
 	}
@@ -135,6 +148,7 @@ public class InitializrMetadata {
 		this.packagings.merge(other.packagings);
 		this.javaVersions.merge(other.javaVersions);
 		this.languages.merge(other.languages);
+		this.propertyFiles.merge(other.propertyFiles);
 		this.name.merge(other.name);
 		this.description.merge(other.description);
 		this.groupId.merge(other.groupId);
@@ -245,6 +259,7 @@ public class InitializrMetadata {
 		defaults.put("packaging", defaultId(this.packagings));
 		defaults.put("javaVersion", defaultId(this.javaVersions));
 		defaults.put("language", defaultId(this.languages));
+		defaults.put("propertyFile", defaultId(this.propertyFiles));
 		defaults.put("groupId", this.groupId.getContent());
 		defaults.put("artifactId", this.artifactId.getContent());
 		defaults.put("version", this.version.getContent());

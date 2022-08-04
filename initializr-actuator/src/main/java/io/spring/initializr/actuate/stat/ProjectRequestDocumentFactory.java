@@ -62,6 +62,11 @@ public class ProjectRequestDocumentFactory {
 		if (StringUtils.hasText(request.getLanguage()) && metadata.getLanguages().get(request.getLanguage()) == null) {
 			document.triggerError().setLanguage(true);
 		}
+		
+		document.setPropertyFile(request.getPropertyFile());
+		if (StringUtils.hasText(request.getPropertyFile()) && metadata.getPropertyFiles().get(request.getPropertyFile()) == null) {
+			document.triggerError().setPropertyFile(true);
+		}
 
 		document.setPackaging(request.getPackaging());
 		if (StringUtils.hasText(request.getPackaging())

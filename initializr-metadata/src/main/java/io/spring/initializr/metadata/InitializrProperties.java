@@ -67,6 +67,10 @@ public class InitializrProperties extends InitializrConfiguration {
 	 */
 	@JsonIgnore
 	private final List<DefaultMetadataElement> bootVersions = new ArrayList<>();
+	
+	/** 属性配置文件类型 */
+	@JsonIgnore
+	private final List<DefaultMetadataElement> propertyFiles = new ArrayList<>();
 
 	/**
 	 * GroupId metadata.
@@ -126,6 +130,15 @@ public class InitializrProperties extends InitializrConfiguration {
 
 	public List<DefaultMetadataElement> getBootVersions() {
 		return this.bootVersions;
+	}
+
+	/**
+	 * @return 获取属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午12:47:34
+	 */
+	public List<DefaultMetadataElement> getPropertyFiles() {
+		return propertyFiles;
 	}
 
 	public SimpleElement getGroupId() {

@@ -17,7 +17,10 @@
 package io.spring.initializr.generator.spring.configuration;
 
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.condition.ConditionalOnPropertyFile;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.propertyfile.properties.Properties;
+import io.spring.initializr.generator.propertyfile.yml.Yml;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.context.annotation.Bean;
@@ -30,12 +33,14 @@ import org.springframework.context.annotation.Bean;
 @ProjectGenerationConfiguration
 public class ApplicationConfigurationProjectGenerationConfiguration {
 
-//	@Bean
-//	public ApplicationPropertiesContributor applicationPropertiesContributor() {
-//		return new ApplicationPropertiesContributor();
-//	}
+	@Bean
+	@ConditionalOnPropertyFile(Properties.ID)
+	public ApplicationPropertiesContributor applicationPropertiesContributor() {
+		return new ApplicationPropertiesContributor();
+	}
 	
 	@Bean
+	@ConditionalOnPropertyFile(Yml.ID)
 	public ApplicationYmlContributor applicationYmlContributor() {
 		return new ApplicationYmlContributor();
 	}

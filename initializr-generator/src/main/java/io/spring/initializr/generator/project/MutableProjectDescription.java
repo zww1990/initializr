@@ -24,6 +24,7 @@ import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.packaging.Packaging;
+import io.spring.initializr.generator.propertyfile.PropertyFile;
 import io.spring.initializr.generator.version.Version;
 
 import org.springframework.util.StringUtils;
@@ -42,6 +43,9 @@ public class MutableProjectDescription implements ProjectDescription {
 	private Packaging packaging;
 
 	private Language language;
+	
+	/** 属性配置文件类型 */
+	private PropertyFile propertyFile;
 
 	private final Map<String, Dependency> requestedDependencies = new LinkedHashMap<>();
 
@@ -73,6 +77,7 @@ public class MutableProjectDescription implements ProjectDescription {
 		this.buildSystem = source.getBuildSystem();
 		this.packaging = source.getPackaging();
 		this.language = source.getLanguage();
+		this.propertyFile = source.getPropertyFile();
 		this.requestedDependencies.putAll(source.getRequestedDependencies());
 		this.groupId = source.getGroupId();
 		this.artifactId = source.getArtifactId();
@@ -123,6 +128,20 @@ public class MutableProjectDescription implements ProjectDescription {
 
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+
+	@Override
+	public PropertyFile getPropertyFile() {
+		return propertyFile;
+	}
+
+	/**
+	 * @param propertyFile 设置属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午2:07:07
+	 */
+	public void setPropertyFile(PropertyFile propertyFile) {
+		this.propertyFile = propertyFile;
 	}
 
 	public Dependency addDependency(String id, Dependency dependency) {

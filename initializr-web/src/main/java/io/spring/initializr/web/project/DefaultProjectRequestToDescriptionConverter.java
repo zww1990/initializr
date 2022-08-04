@@ -24,6 +24,7 @@ import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.project.MutableProjectDescription;
 import io.spring.initializr.generator.project.ProjectDescription;
+import io.spring.initializr.generator.propertyfile.PropertyFile;
 import io.spring.initializr.generator.version.Version;
 import io.spring.initializr.metadata.DefaultMetadataElement;
 import io.spring.initializr.metadata.Dependency;
@@ -87,6 +88,7 @@ public class DefaultProjectRequestToDescriptionConverter
 		description.setDescription(request.getDescription());
 		description.setGroupId(request.getGroupId());
 		description.setLanguage(Language.forId(request.getLanguage(), request.getJavaVersion()));
+		description.setPropertyFile(PropertyFile.forId(request.getPropertyFile()));
 		description.setName(request.getName());
 		description.setPackageName(request.getPackageName());
 		description.setPackaging(Packaging.forId(request.getPackaging()));
