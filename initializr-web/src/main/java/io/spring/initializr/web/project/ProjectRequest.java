@@ -49,6 +49,9 @@ public class ProjectRequest {
 	private String applicationName;
 
 	private String language;
+	
+	/** 属性配置文件类型 */
+	private String propertyFile;
 
 	private String packageName;
 
@@ -143,6 +146,24 @@ public class ProjectRequest {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	/**
+	 * @return 获取属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午1:35:23
+	 */
+	public String getPropertyFile() {
+		return propertyFile;
+	}
+
+	/**
+	 * @param propertyFile 设置属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午1:35:27
+	 */
+	public void setPropertyFile(String propertyFile) {
+		this.propertyFile = propertyFile;
 	}
 
 	public String getPackageName() {

@@ -22,6 +22,7 @@ import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.packaging.Packaging;
+import io.spring.initializr.generator.propertyfile.PropertyFile;
 import io.spring.initializr.generator.version.Version;
 
 /**
@@ -70,6 +71,13 @@ public interface ProjectDescription {
 	 * @return the primary language or {@code null}
 	 */
 	Language getLanguage();
+	
+	/**
+	 * @return 获取属性配置文件类型
+	 * @author zhang weiwei
+	 * @since 2022年8月4日,下午2:05:57
+	 */
+	PropertyFile getPropertyFile();
 
 	/**
 	 * Return the build {@code groupId}.

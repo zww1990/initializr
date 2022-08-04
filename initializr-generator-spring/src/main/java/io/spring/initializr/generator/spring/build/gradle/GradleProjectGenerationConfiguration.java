@@ -125,59 +125,59 @@ public class GradleProjectGenerationConfiguration {
 	/**
 	 * Configuration specific to projects using Gradle 4.
 	 */
-	@Configuration
-	@ConditionalOnGradleVersion("4")
-	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
-	static class Gradle4ProjectGenerationConfiguration {
-
+//	@Configuration
+//	@ConditionalOnGradleVersion("4")
+//	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
+//	static class Gradle4ProjectGenerationConfiguration {
+//
 //		@Bean
 //		GradleWrapperContributor gradle4WrapperContributor() {
 //			return new GradleWrapperContributor("4");
 //		}
-
-	}
+//
+//	}
 
 	/**
 	 * Configuration specific to projects using Gradle 5.
 	 */
-	@Configuration
-	@ConditionalOnGradleVersion("5")
-	static class Gradle5ProjectGenerationConfiguration {
-
+//	@Configuration
+//	@ConditionalOnGradleVersion("5")
+//	static class Gradle5ProjectGenerationConfiguration {
+//
 //		@Bean
 //		GradleWrapperContributor gradle5WrapperContributor() {
 //			return new GradleWrapperContributor("5");
 //		}
-
-	}
+//
+//	}
 
 	/**
 	 * Configuration specific to projects using Gradle 6.
 	 */
-	@Configuration
-	@ConditionalOnGradleVersion("6")
-	static class Gradle6ProjectGenerationConfiguration {
-
+//	@Configuration
+//	@ConditionalOnGradleVersion("6")
+//	static class Gradle6ProjectGenerationConfiguration {
+//
 //		@Bean
 //		GradleWrapperContributor gradle6WrapperContributor() {
 //			return new GradleWrapperContributor("6");
 //		}
-
-	}
+//
+//	}
 
 	/**
 	 * Configuration specific to projects using Gradle 7.
 	 */
-	@Configuration
-	@ConditionalOnGradleVersion("7")
-	static class Gradle7ProjectGenerationConfiguration {
-
+//	@Configuration
+//	@ConditionalOnGradleVersion("7")
+//	static class Gradle7ProjectGenerationConfiguration {
+//
 //		@Bean
 //		GradleWrapperContributor gradle7WrapperContributor() {
 //			return new GradleWrapperContributor("7");
 //		}
-
-	}
+//
+//	}
 
 	/**
 	 * Configuration specific to projects using Gradle (Groovy DSL).
