@@ -17,7 +17,9 @@
 package io.spring.initializr.generator.spring.configuration;
 
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.condition.ConditionalOnLanguage;
 import io.spring.initializr.generator.condition.ConditionalOnPropertyFile;
+import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.propertyfile.properties.Properties;
 import io.spring.initializr.generator.propertyfile.yml.Yml;
@@ -51,6 +53,7 @@ public class ApplicationConfigurationProjectGenerationConfiguration {
 	}
 	
 	@Bean
+	@ConditionalOnLanguage(JavaLanguage.ID)
 	public JavaFoldersContributor javaFoldersContributor(InitializrMetadata metadata) {
 		return new JavaFoldersContributor(metadata);
 	}
