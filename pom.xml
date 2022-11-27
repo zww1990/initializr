@@ -39,7 +39,7 @@
 
 	<properties>
 		<maven.test.skip>true</maven.test.skip>
-		<revision>0.13.0-SNAPSHOT</revision>
+		<revision>0.20.0-SNAPSHOT</revision>
 		<disable.checks>false</disable.checks>
 		<git.url>https://github.com/spring-io/initializr</git.url>
 		<git.connection>scm:git:https://github.com/spring-io/initializr</git.connection>
@@ -86,7 +86,7 @@
 				</property>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.33</spring-javaformat.version>
+				<spring-javaformat.version>0.0.35</spring-javaformat.version>
 				<nohttp-checkstyle.version>0.0.10</nohttp-checkstyle.version>
 			</properties>
 			<build>

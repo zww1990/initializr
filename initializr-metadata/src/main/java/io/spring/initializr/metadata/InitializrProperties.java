@@ -168,7 +168,7 @@ public class InitializrProperties extends InitializrConfiguration {
 	/**
 	 * A simple element from the properties.
 	 */
-	public static class SimpleElement {
+	public static final class SimpleElement {
 
 		/**
 		 * Element title.
@@ -185,7 +185,7 @@ public class InitializrProperties extends InitializrConfiguration {
 		 */
 		private String value;
 
-		public SimpleElement(String value) {
+		private SimpleElement(String value) {
 			this.value = value;
 		}
 
