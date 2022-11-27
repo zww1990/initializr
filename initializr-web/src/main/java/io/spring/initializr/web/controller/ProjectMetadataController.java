@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package io.spring.initializr.web.controller;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletResponse;
-
 import io.spring.initializr.generator.version.Version;
 import io.spring.initializr.metadata.DependencyMetadata;
 import io.spring.initializr.metadata.DependencyMetadataProvider;
@@ -35,6 +33,7 @@ import io.spring.initializr.web.mapper.InitializrMetadataV22JsonMapper;
 import io.spring.initializr.web.mapper.InitializrMetadataV2JsonMapper;
 import io.spring.initializr.web.mapper.InitializrMetadataVersion;
 import io.spring.initializr.web.project.InvalidProjectRequestException;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -156,12 +155,12 @@ public class ProjectMetadataController extends AbstractMetadataController {
 
 	private static InitializrMetadataJsonMapper getJsonMapper(InitializrMetadataVersion version) {
 		switch (version) {
-		case V2:
-			return new InitializrMetadataV2JsonMapper();
-		case V2_1:
-			return new InitializrMetadataV21JsonMapper();
-		default:
-			return new InitializrMetadataV22JsonMapper();
+			case V2:
+				return new InitializrMetadataV2JsonMapper();
+			case V2_1:
+				return new InitializrMetadataV21JsonMapper();
+			default:
+				return new InitializrMetadataV22JsonMapper();
 		}
 	}
 

@@ -38,7 +38,7 @@
 	</developers>
 
 	<properties>
-		<revision>0.13.0-SNAPSHOT</revision>
+		<revision>0.20.0-SNAPSHOT</revision>
 		<disable.checks>false</disable.checks>
 		<git.url>https://github.com/spring-io/initializr</git.url>
 		<git.connection>scm:git:https://github.com/spring-io/initializr</git.connection>
@@ -84,7 +84,7 @@
 				</property>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.33</spring-javaformat.version>
+				<spring-javaformat.version>0.0.35</spring-javaformat.version>
 				<nohttp-checkstyle.version>0.0.10</nohttp-checkstyle.version>
 			</properties>
 			<build>
@@ -230,5 +230,26 @@
 			</properties>
 		</profile>
 	</profiles>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>
