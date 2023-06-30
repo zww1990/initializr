@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package io.spring.initializr.actuate.stat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.actuate.stat.ProjectRequestDocument.ClientInformation;
@@ -38,8 +40,11 @@ import org.springframework.util.StringUtils;
  * Create {@link ProjectRequestDocument} instances.
  *
  * @author Stephane Nicoll
+ * @author Brian Clozel
  */
 public class ProjectRequestDocumentFactory {
+
+	private static final Pattern PROJECT_TYPE_PATTERN = Pattern.compile("([a-z]*)-[a-z-]*");
 
 	public ProjectRequestDocument createDocument(ProjectRequestEvent event) {
 		InitializrMetadata metadata = event.getMetadata();
@@ -78,10 +83,12 @@ public class ProjectRequestDocumentFactory {
 		// Let's not rely on the resolved dependencies here
 		List<String> dependencies = new ArrayList<>(request.getDependencies());
 		List<String> validDependencies = dependencies.stream()
-				.filter((id) -> metadata.getDependencies().get(id) != null).collect(Collectors.toList());
+			.filter((id) -> metadata.getDependencies().get(id) != null)
+			.collect(Collectors.toList());
 		document.setDependencies(new DependencyInformation(validDependencies));
-		List<String> invalidDependencies = dependencies.stream().filter((id) -> (!validDependencies.contains(id)))
-				.collect(Collectors.toList());
+		List<String> invalidDependencies = dependencies.stream()
+			.filter((id) -> (!validDependencies.contains(id)))
+			.collect(Collectors.toList());
 		if (!invalidDependencies.isEmpty()) {
 			document.triggerError().triggerInvalidDependencies(invalidDependencies);
 		}
@@ -97,9 +104,11 @@ public class ProjectRequestDocumentFactory {
 	}
 
 	private String determineBuildSystem(ProjectRequest request) {
-		String type = request.getType();
-		String[] elements = type.split("-");
-		return (elements.length == 2) ? elements[0] : null;
+		Matcher typeMatcher = PROJECT_TYPE_PATTERN.matcher(request.getType());
+		if (typeMatcher.matches()) {
+			return typeMatcher.group(1);
+		}
+		return null;
 	}
 
 	private VersionInformation determineVersionInformation(ProjectRequest request) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ package io.spring.initializr.generator.spring.code.java;
 import java.lang.reflect.Modifier;
 
 import io.spring.initializr.generator.condition.ConditionalOnPackaging;
-import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.ClassName;
+import io.spring.initializr.generator.language.CodeBlock;
 import io.spring.initializr.generator.language.Parameter;
-import io.spring.initializr.generator.language.java.JavaExpressionStatement;
 import io.spring.initializr.generator.language.java.JavaMethodDeclaration;
-import io.spring.initializr.generator.language.java.JavaMethodInvocation;
-import io.spring.initializr.generator.language.java.JavaReturnStatement;
 import io.spring.initializr.generator.language.java.JavaTypeDeclaration;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
@@ -48,20 +46,22 @@ class JavaProjectGenerationDefaultContributorsConfiguration {
 	MainApplicationTypeCustomizer<JavaTypeDeclaration> mainMethodContributor() {
 		return (typeDeclaration) -> {
 			typeDeclaration.modifiers(Modifier.PUBLIC);
-			typeDeclaration.addMethodDeclaration(
-					JavaMethodDeclaration.method("main").modifiers(Modifier.PUBLIC | Modifier.STATIC).returning("void")
-							.parameters(new Parameter("java.lang.String[]", "args"))
-							.body(new JavaExpressionStatement(
-									new JavaMethodInvocation("org.springframework.boot.SpringApplication", "run",
-											typeDeclaration.getName() + ".class", "args"))));
+			typeDeclaration.addMethodDeclaration(JavaMethodDeclaration.method("main")
+				.modifiers(Modifier.PUBLIC | Modifier.STATIC)
+				.returning("void")
+				.parameters(Parameter.of("args", String[].class))
+				.body(CodeBlock.ofStatement("$T.run($L.class, args)", "org.springframework.boot.SpringApplication",
+						typeDeclaration.getName())));
 		};
 	}
 
 	@Bean
 	TestApplicationTypeCustomizer<JavaTypeDeclaration> junitJupiterTestMethodContributor() {
 		return (typeDeclaration) -> {
-			JavaMethodDeclaration method = JavaMethodDeclaration.method("contextLoads").returning("void").body();
-			method.annotate(Annotation.name("org.junit.jupiter.api.Test"));
+			JavaMethodDeclaration method = JavaMethodDeclaration.method("contextLoads")
+				.returning("void")
+				.body(CodeBlock.of(""));
+			method.annotations().add(ClassName.of("org.junit.jupiter.api.Test"));
 			typeDeclaration.addMethodDeclaration(method);
 		};
 	}
@@ -79,13 +79,13 @@ class JavaProjectGenerationDefaultContributorsConfiguration {
 			return (typeDeclaration) -> {
 				typeDeclaration.modifiers(Modifier.PUBLIC);
 				JavaMethodDeclaration configure = JavaMethodDeclaration.method("configure")
-						.modifiers(Modifier.PROTECTED)
-						.returning("org.springframework.boot.builder.SpringApplicationBuilder")
-						.parameters(new Parameter("org.springframework.boot.builder.SpringApplicationBuilder",
-								"application"))
-						.body(new JavaReturnStatement(new JavaMethodInvocation("application", "sources",
-								description.getApplicationName() + ".class")));
-				configure.annotate(Annotation.name("java.lang.Override"));
+					.modifiers(Modifier.PROTECTED)
+					.returning("org.springframework.boot.builder.SpringApplicationBuilder")
+					.parameters(
+							Parameter.of("application", "org.springframework.boot.builder.SpringApplicationBuilder"))
+					.body(CodeBlock.ofStatement("return application.sources($L.class)",
+							description.getApplicationName()));
+				configure.annotations().add(ClassName.of(Override.class));
 				typeDeclaration.addMethodDeclaration(configure);
 			};
 		}

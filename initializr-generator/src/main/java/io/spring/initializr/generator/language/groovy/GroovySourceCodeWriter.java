@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -38,6 +40,10 @@ import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.Annotatable;
 import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.ClassName;
+import io.spring.initializr.generator.language.CodeBlock;
+import io.spring.initializr.generator.language.CodeBlock.FormattingOptions;
+import io.spring.initializr.generator.language.CompilationUnit;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.SourceCode;
 import io.spring.initializr.generator.language.SourceCodeWriter;
@@ -50,6 +56,8 @@ import io.spring.initializr.generator.language.SourceStructure;
  * @author Matt Berteaux
  */
 public class GroovySourceCodeWriter implements SourceCodeWriter<GroovySourceCode> {
+
+	private static final FormattingOptions FORMATTING_OPTIONS = new GroovyFormattingOptions();
 
 	private static final Map<Predicate<Integer>, String> TYPE_MODIFIERS;
 
@@ -137,49 +145,15 @@ public class GroovySourceCodeWriter implements SourceCodeWriter<GroovySourceCode
 		}
 	}
 
+	private void writeAnnotations(IndentingWriter writer, Annotatable annotatable, Runnable separator) {
+		annotatable.annotations().values().forEach((annotation) -> {
+			annotation.write(writer, FORMATTING_OPTIONS);
+			separator.run();
+		});
+	}
+
 	private void writeAnnotations(IndentingWriter writer, Annotatable annotatable) {
-		annotatable.getAnnotations().forEach((annotation) -> writeAnnotation(writer, annotation));
-	}
-
-	private void writeAnnotation(IndentingWriter writer, Annotation annotation) {
-		writer.print("@" + getUnqualifiedName(annotation.getName()));
-		List<Annotation.Attribute> attributes = annotation.getAttributes();
-		if (!attributes.isEmpty()) {
-			writer.print("(");
-			if (attributes.size() == 1 && attributes.get(0).getName().equals("value")) {
-				writer.print(formatAnnotationAttribute(attributes.get(0)));
-			}
-			else {
-				writer.print(attributes.stream()
-						.map((attribute) -> attribute.getName() + " = " + formatAnnotationAttribute(attribute))
-						.collect(Collectors.joining(", ")));
-			}
-			writer.print(")");
-		}
-		writer.println();
-	}
-
-	private String formatAnnotationAttribute(Annotation.Attribute attribute) {
-		List<String> values = attribute.getValues();
-		if (attribute.getType().equals(Class.class)) {
-			return formatValues(values, this::getUnqualifiedName);
-		}
-		if (Enum.class.isAssignableFrom(attribute.getType())) {
-			return formatValues(values, (value) -> {
-				String enumValue = value.substring(value.lastIndexOf(".") + 1);
-				String enumClass = value.substring(0, value.lastIndexOf("."));
-				return String.format("%s.%s", getUnqualifiedName(enumClass), enumValue);
-			});
-		}
-		if (attribute.getType().equals(String.class)) {
-			return formatValues(values, (value) -> String.format("\"%s\"", value));
-		}
-		return formatValues(values, (value) -> String.format("%s", value));
-	}
-
-	private String formatValues(List<String> values, Function<String, String> formatter) {
-		String result = values.stream().map(formatter).collect(Collectors.joining(", "));
-		return (values.size() > 1) ? "[ " + result + " ]" : result;
+		writeAnnotations(writer, annotatable, writer::println);
 	}
 
 	private void writeFieldDeclaration(IndentingWriter writer, GroovyFieldDeclaration fieldDeclaration) {
@@ -200,34 +174,52 @@ public class GroovySourceCodeWriter implements SourceCodeWriter<GroovySourceCode
 		writeAnnotations(writer, methodDeclaration);
 		writeModifiers(writer, METHOD_MODIFIERS, methodDeclaration.getModifiers());
 		writer.print(getUnqualifiedName(methodDeclaration.getReturnType()) + " " + methodDeclaration.getName() + "(");
-		List<Parameter> parameters = methodDeclaration.getParameters();
-		if (!parameters.isEmpty()) {
-			writer.print(parameters.stream()
-					.map((parameter) -> getUnqualifiedName(parameter.getType()) + " " + parameter.getName())
-					.collect(Collectors.joining(", ")));
-		}
+		writeParameters(writer, methodDeclaration.getParameters());
 		writer.println(") {");
 		writer.indented(() -> {
-			List<GroovyStatement> statements = methodDeclaration.getStatements();
-			for (GroovyStatement statement : statements) {
-				if (statement instanceof GroovyExpressionStatement) {
-					writeExpression(writer, ((GroovyExpressionStatement) statement).getExpression());
-				}
-				else if (statement instanceof GroovyReturnStatement) {
-					writeExpression(writer, ((GroovyReturnStatement) statement).getExpression());
-				}
-				writer.println();
-			}
+			methodDeclaration.getCode().write(writer, FORMATTING_OPTIONS);
+			writeStatements(writer, methodDeclaration);
 		});
 		writer.println("}");
 		writer.println();
 	}
 
+	private void writeParameters(IndentingWriter writer, List<Parameter> parameters) {
+		if (parameters.isEmpty()) {
+			return;
+		}
+		Iterator<Parameter> it = parameters.iterator();
+		while (it.hasNext()) {
+			Parameter parameter = it.next();
+			writeAnnotations(writer, parameter, () -> writer.print(" "));
+			writer.print(getUnqualifiedName(parameter.getType()) + " " + parameter.getName());
+			if (it.hasNext()) {
+				writer.print(", ");
+			}
+		}
+	}
+
+	@SuppressWarnings("removal")
+	private void writeStatements(IndentingWriter writer, GroovyMethodDeclaration methodDeclaration) {
+		List<GroovyStatement> statements = methodDeclaration.getStatements();
+		for (GroovyStatement statement : statements) {
+			if (statement instanceof GroovyExpressionStatement) {
+				writeExpression(writer, ((GroovyExpressionStatement) statement).getExpression());
+			}
+			else if (statement instanceof GroovyReturnStatement) {
+				writeExpression(writer, ((GroovyReturnStatement) statement).getExpression());
+			}
+			writer.println();
+		}
+	}
+
 	private void writeModifiers(IndentingWriter writer, Map<Predicate<Integer>, String> availableModifiers,
 			int declaredModifiers) {
-		String modifiers = availableModifiers.entrySet().stream()
-				.filter((entry) -> entry.getKey().test(declaredModifiers)).map(Entry::getValue)
-				.collect(Collectors.joining(" "));
+		String modifiers = availableModifiers.entrySet()
+			.stream()
+			.filter((entry) -> entry.getKey().test(declaredModifiers))
+			.map(Entry::getValue)
+			.collect(Collectors.joining(" "));
 		if (!modifiers.isEmpty()) {
 			writer.print(modifiers);
 			writer.print(" ");
@@ -248,56 +240,48 @@ public class GroovySourceCodeWriter implements SourceCodeWriter<GroovySourceCode
 	private Set<String> determineImports(GroovyCompilationUnit compilationUnit) {
 		List<String> imports = new ArrayList<>();
 		for (GroovyTypeDeclaration typeDeclaration : compilationUnit.getTypeDeclarations()) {
-			if (requiresImport(typeDeclaration.getExtends())) {
-				imports.add(typeDeclaration.getExtends());
-			}
-			imports.addAll(getRequiredImports(typeDeclaration.getAnnotations(), this::determineImports));
+			imports.add(typeDeclaration.getExtends());
+			imports.addAll(appendImports(typeDeclaration.annotations().values(), Annotation::getImports));
 			for (GroovyFieldDeclaration fieldDeclaration : typeDeclaration.getFieldDeclarations()) {
-				if (requiresImport(fieldDeclaration.getReturnType())) {
-					imports.add(fieldDeclaration.getReturnType());
-				}
-				imports.addAll(getRequiredImports(fieldDeclaration.getAnnotations(), this::determineImports));
+				imports.add(fieldDeclaration.getReturnType());
+				imports.addAll(appendImports(fieldDeclaration.annotations().values(), Annotation::getImports));
 			}
 			for (GroovyMethodDeclaration methodDeclaration : typeDeclaration.getMethodDeclarations()) {
-				if (requiresImport(methodDeclaration.getReturnType())) {
-					imports.add(methodDeclaration.getReturnType());
+				imports.add(methodDeclaration.getReturnType());
+				imports.addAll(appendImports(methodDeclaration.annotations().values(), Annotation::getImports));
+				for (Parameter parameter : methodDeclaration.getParameters()) {
+					imports.add(parameter.getType());
+					imports.addAll(appendImports(parameter.annotations().values(), Annotation::getImports));
 				}
-				imports.addAll(getRequiredImports(methodDeclaration.getAnnotations(), this::determineImports));
-				imports.addAll(getRequiredImports(methodDeclaration.getParameters(),
-						(parameter) -> Collections.singletonList(parameter.getType())));
-				imports.addAll(getRequiredImports(methodDeclaration.getStatements().stream()
-						.filter(GroovyExpressionStatement.class::isInstance).map(GroovyExpressionStatement.class::cast)
-						.map(GroovyExpressionStatement::getExpression).filter(GroovyMethodInvocation.class::isInstance)
-						.map(GroovyMethodInvocation.class::cast),
-						(methodInvocation) -> Collections.singleton(methodInvocation.getTarget())));
+				imports.addAll(methodDeclaration.getCode().getImports());
+				determineImportsFromStatements(imports, methodDeclaration);
 			}
 		}
-		Collections.sort(imports);
-		return new LinkedHashSet<>(imports);
+		return imports.stream()
+			.filter((candidate) -> isImportCandidate(compilationUnit, candidate))
+			.sorted()
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
-	private Collection<String> determineImports(Annotation annotation) {
-		List<String> imports = new ArrayList<>();
-		imports.add(annotation.getName());
-		annotation.getAttributes().forEach((attribute) -> {
-			if (attribute.getType() == Class.class) {
-				imports.addAll(attribute.getValues());
-			}
-			if (Enum.class.isAssignableFrom(attribute.getType())) {
-				imports.addAll(attribute.getValues().stream().map((value) -> value.substring(0, value.lastIndexOf(".")))
-						.toList());
-			}
-		});
-		return imports;
+	@SuppressWarnings("removal")
+	private void determineImportsFromStatements(List<String> imports, GroovyMethodDeclaration methodDeclaration) {
+		imports.addAll(appendImports(
+				methodDeclaration.getStatements()
+					.stream()
+					.filter(GroovyExpressionStatement.class::isInstance)
+					.map(GroovyExpressionStatement.class::cast)
+					.map(GroovyExpressionStatement::getExpression)
+					.filter(GroovyMethodInvocation.class::isInstance)
+					.map(GroovyMethodInvocation.class::cast),
+				(methodInvocation) -> Collections.singleton(methodInvocation.getTarget())));
 	}
 
-	private <T> List<String> getRequiredImports(List<T> candidates, Function<T, Collection<String>> mapping) {
-		return getRequiredImports(candidates.stream(), mapping);
+	private <T> List<String> appendImports(List<T> candidates, Function<T, Collection<String>> mapping) {
+		return appendImports(candidates.stream(), mapping);
 	}
 
-	private <T> List<String> getRequiredImports(Stream<T> candidates, Function<T, Collection<String>> mapping) {
-		return candidates.map(mapping).flatMap(Collection::stream).filter(this::requiresImport)
-				.collect(Collectors.toList());
+	private <T> List<String> appendImports(Stream<T> candidates, Function<T, Collection<String>> mapping) {
+		return candidates.map(mapping).flatMap(Collection::stream).collect(Collectors.toList());
 	}
 
 	private String getUnqualifiedName(String name) {
@@ -307,12 +291,31 @@ public class GroovySourceCodeWriter implements SourceCodeWriter<GroovySourceCode
 		return name.substring(name.lastIndexOf(".") + 1);
 	}
 
-	private boolean requiresImport(String name) {
+	private boolean isImportCandidate(CompilationUnit<?> compilationUnit, String name) {
 		if (name == null || !name.contains(".")) {
 			return false;
 		}
 		String packageName = name.substring(0, name.lastIndexOf('.'));
-		return !"java.lang".equals(packageName);
+		return !"java.lang".equals(packageName) && !compilationUnit.getPackageName().equals(packageName);
+	}
+
+	static class GroovyFormattingOptions implements FormattingOptions {
+
+		@Override
+		public String statementSeparator() {
+			return "";
+		}
+
+		@Override
+		public CodeBlock arrayOf(CodeBlock... values) {
+			return CodeBlock.of("[ $L ]", CodeBlock.join(Arrays.asList(values), ", "));
+		}
+
+		@Override
+		public CodeBlock classReference(ClassName className) {
+			return CodeBlock.of("$T", className);
+		}
+
 	}
 
 }

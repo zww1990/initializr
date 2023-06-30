@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import io.spring.initializr.generator.buildsystem.DependencyContainer;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.PropertyContainer;
+import io.spring.initializr.generator.buildsystem.gradle.GradleTask.Attribute.Type;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.version.VersionProperty;
 
@@ -65,8 +66,8 @@ public abstract class GradleBuildWriter {
 		writePlugins(writer, build);
 		writeProperty(writer, "group", settings.getGroup());
 		writeProperty(writer, "version", settings.getVersion());
-		writeJavaSourceCompatibility(writer, settings);
 		writer.println();
+		writeJavaSourceCompatibility(writer, settings);
 		writeConfigurations(writer, build.configurations());
 		writeRepositories(writer, build);
 		writeProperties(writer, build.properties());
@@ -89,8 +90,11 @@ public abstract class GradleBuildWriter {
 	protected abstract void writePlugins(IndentingWriter writer, GradleBuild build);
 
 	protected List<StandardGradlePlugin> extractStandardPlugin(GradleBuild build) {
-		return build.plugins().values().filter(StandardGradlePlugin.class::isInstance)
-				.map(StandardGradlePlugin.class::cast).collect(Collectors.toList());
+		return build.plugins()
+			.values()
+			.filter(StandardGradlePlugin.class::isInstance)
+			.map(StandardGradlePlugin.class::cast)
+			.collect(Collectors.toList());
 	}
 
 	protected abstract void writeJavaSourceCompatibility(IndentingWriter writer, GradleBuildSettings settings);
@@ -108,10 +112,11 @@ public abstract class GradleBuildWriter {
 		if (properties.isEmpty()) {
 			return;
 		}
-		Map<String, String> allProperties = new LinkedHashMap<>(properties.values().collect(Collectors
-				.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> newValue, TreeMap::new)));
+		Map<String, String> allProperties = new LinkedHashMap<>(properties.values()
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> newValue,
+					TreeMap::new)));
 		properties.versions(this::getVersionPropertyKey)
-				.forEach((entry) -> allProperties.put(entry.getKey(), "\"" + entry.getValue() + "\""));
+			.forEach((entry) -> allProperties.put(entry.getKey(), "\"" + entry.getValue() + "\""));
 		writeExtraProperties(writer, allProperties);
 	}
 
@@ -125,7 +130,7 @@ public abstract class GradleBuildWriter {
 		Set<Dependency> sortedDependencies = new LinkedHashSet<>();
 		DependencyContainer dependencies = build.dependencies();
 		sortedDependencies
-				.addAll(filterDependencies(dependencies, (scope) -> scope == null || scope == DependencyScope.COMPILE));
+			.addAll(filterDependencies(dependencies, (scope) -> scope == null || scope == DependencyScope.COMPILE));
 		sortedDependencies.addAll(filterDependencies(dependencies, hasScope(DependencyScope.COMPILE_ONLY)));
 		sortedDependencies.addAll(filterDependencies(dependencies, hasScope(DependencyScope.RUNTIME)));
 		sortedDependencies.addAll(filterDependencies(dependencies, hasScope(DependencyScope.ANNOTATION_PROCESSOR)));
@@ -180,8 +185,10 @@ public abstract class GradleBuildWriter {
 		if (build.boms().isEmpty()) {
 			return;
 		}
-		List<BillOfMaterials> boms = build.boms().items()
-				.sorted(Comparator.comparingInt(BillOfMaterials::getOrder).reversed()).collect(Collectors.toList());
+		List<BillOfMaterials> boms = build.boms()
+			.items()
+			.sorted(Comparator.comparingInt(BillOfMaterials::getOrder).reversed())
+			.collect(Collectors.toList());
 		writer.println();
 		writer.println("dependencyManagement {");
 		writer.indented(() -> writeNestedCollection(writer, "imports", boms, this::bomAsString));
@@ -194,12 +201,17 @@ public abstract class GradleBuildWriter {
 
 	protected final void writeTaskCustomization(IndentingWriter writer, GradleTask task) {
 		writeCollection(writer, task.getInvocations(), this::invocationAsString);
-		writeMap(writer, task.getAttributes(), (key, value) -> key + " = " + value);
+		writeCollection(writer, task.getAttributes(), this::attributeAsString);
 		task.getNested().forEach((property, nestedCustomization) -> {
 			writer.println(property + " {");
 			writer.indented(() -> writeTaskCustomization(writer, nestedCustomization));
 			writer.println("}");
 		});
+	}
+
+	private String attributeAsString(GradleTask.Attribute attribute) {
+		String separator = (attribute.getType() == Type.SET) ? "=" : "+=";
+		return String.format("%s %s %s", attribute.getName(), separator, attribute.getValue());
 	}
 
 	protected abstract String invocationAsString(GradleTask.Invocation invocation);
@@ -255,8 +267,10 @@ public abstract class GradleBuildWriter {
 
 	private Collection<Dependency> filterDependencies(DependencyContainer dependencies,
 			Predicate<DependencyScope> filter) {
-		return dependencies.items().filter((dep) -> filter.test(dep.getScope())).sorted(getDependencyComparator())
-				.collect(Collectors.toList());
+		return dependencies.items()
+			.filter((dep) -> filter.test(dep.getScope()))
+			.sorted(getDependencyComparator())
+			.collect(Collectors.toList());
 	}
 
 }

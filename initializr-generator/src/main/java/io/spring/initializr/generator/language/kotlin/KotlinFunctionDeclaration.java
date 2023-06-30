@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.spring.initializr.generator.language.Annotatable;
-import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.AnnotationContainer;
+import io.spring.initializr.generator.language.CodeBlock;
 import io.spring.initializr.generator.language.Parameter;
 
 /**
@@ -32,7 +33,7 @@ import io.spring.initializr.generator.language.Parameter;
  */
 public final class KotlinFunctionDeclaration implements Annotatable {
 
-	private final List<Annotation> annotations = new ArrayList<>();
+	private final AnnotationContainer annotations = new AnnotationContainer();
 
 	private final String name;
 
@@ -42,15 +43,26 @@ public final class KotlinFunctionDeclaration implements Annotatable {
 
 	private final List<Parameter> parameters;
 
+	private final CodeBlock code;
+
 	private final List<KotlinStatement> statements;
 
-	private KotlinFunctionDeclaration(String name, String returnType, List<KotlinModifier> modifiers,
-			List<Parameter> parameters, List<KotlinStatement> statements) {
-		this.name = name;
-		this.returnType = returnType;
-		this.modifiers = modifiers;
-		this.parameters = parameters;
-		this.statements = statements;
+	private KotlinFunctionDeclaration(Builder builder, CodeBlock code) {
+		this.name = builder.name;
+		this.returnType = builder.returnType;
+		this.modifiers = builder.modifiers;
+		this.parameters = List.copyOf(builder.parameters);
+		this.code = code;
+		this.statements = Collections.emptyList();
+	}
+
+	private KotlinFunctionDeclaration(Builder builder, List<KotlinStatement> statements) {
+		this.name = builder.name;
+		this.returnType = builder.returnType;
+		this.modifiers = builder.modifiers;
+		this.parameters = List.copyOf(builder.parameters);
+		this.code = CodeBlock.of("");
+		this.statements = List.copyOf(statements);
 	}
 
 	public static Builder function(String name) {
@@ -73,18 +85,18 @@ public final class KotlinFunctionDeclaration implements Annotatable {
 		return this.modifiers;
 	}
 
+	CodeBlock getCode() {
+		return this.code;
+	}
+
+	@Deprecated(since = "0.20.0", forRemoval = true)
 	public List<KotlinStatement> getStatements() {
 		return this.statements;
 	}
 
 	@Override
-	public void annotate(Annotation annotation) {
-		this.annotations.add(annotation);
-	}
-
-	@Override
-	public List<Annotation> getAnnotations() {
-		return Collections.unmodifiableList(this.annotations);
+	public AnnotationContainer annotations() {
+		return this.annotations;
 	}
 
 	/**
@@ -119,9 +131,13 @@ public final class KotlinFunctionDeclaration implements Annotatable {
 			return this;
 		}
 
+		public KotlinFunctionDeclaration body(CodeBlock code) {
+			return new KotlinFunctionDeclaration(this, code);
+		}
+
+		@Deprecated(since = "0.20.0", forRemoval = true)
 		public KotlinFunctionDeclaration body(KotlinStatement... statements) {
-			return new KotlinFunctionDeclaration(this.name, this.returnType, this.modifiers, this.parameters,
-					Arrays.asList(statements));
+			return new KotlinFunctionDeclaration(this, Arrays.asList(statements));
 		}
 
 	}

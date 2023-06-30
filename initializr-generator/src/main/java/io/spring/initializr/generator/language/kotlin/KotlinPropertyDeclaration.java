@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package io.spring.initializr.generator.language.kotlin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.language.Annotatable;
 import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.AnnotationContainer;
+import io.spring.initializr.generator.language.ClassName;
+import io.spring.initializr.generator.language.CodeBlock;
 
 /**
  * Declaration of a property written in Kotlin.
@@ -32,7 +34,7 @@ import io.spring.initializr.generator.language.Annotation;
  */
 public final class KotlinPropertyDeclaration implements Annotatable {
 
-	private final List<Annotation> annotations = new ArrayList<>();
+	private final AnnotationContainer annotations = new AnnotationContainer();
 
 	private final boolean isVal;
 
@@ -95,13 +97,8 @@ public final class KotlinPropertyDeclaration implements Annotatable {
 	}
 
 	@Override
-	public void annotate(Annotation annotation) {
-		this.annotations.add(annotation);
-	}
-
-	@Override
-	public List<Annotation> getAnnotations() {
-		return Collections.unmodifiableList(this.annotations);
+	public AnnotationContainer annotations() {
+		return this.annotations;
 	}
 
 	/**
@@ -195,7 +192,9 @@ public final class KotlinPropertyDeclaration implements Annotatable {
 
 	public static final class AccessorBuilder<T extends Builder<T>> {
 
-		private final List<Annotation> annotations = new ArrayList<>();
+		private final AnnotationContainer annotations = new AnnotationContainer();
+
+		private CodeBlock code;
 
 		private KotlinExpressionStatement body;
 
@@ -208,13 +207,29 @@ public final class KotlinPropertyDeclaration implements Annotatable {
 			this.accessorFunction = accessorFunction;
 		}
 
+		@Deprecated(since = "0.20.0", forRemoval = true)
 		public AccessorBuilder<?> withAnnotation(Annotation annotation) {
-			this.annotations.add(annotation);
+			this.annotations.add(annotation.getClassName(), (builder) -> builder.from(annotation));
 			return this;
 		}
 
+		public AccessorBuilder<?> withAnnotation(ClassName className) {
+			return withAnnotation(className, null);
+		}
+
+		public AccessorBuilder<?> withAnnotation(ClassName className, Consumer<Annotation.Builder> annotation) {
+			this.annotations.add(className, annotation);
+			return this;
+		}
+
+		@Deprecated(since = "0.20.0", forRemoval = true)
 		public AccessorBuilder<?> withBody(KotlinExpressionStatement expressionStatement) {
 			this.body = expressionStatement;
+			return this;
+		}
+
+		public AccessorBuilder<?> withBody(CodeBlock code) {
+			this.code = code;
 			return this;
 		}
 
@@ -227,31 +242,34 @@ public final class KotlinPropertyDeclaration implements Annotatable {
 
 	static final class Accessor implements Annotatable {
 
-		private final List<Annotation> annotations = new ArrayList<>();
+		private final AnnotationContainer annotations;
+
+		private final CodeBlock code;
 
 		private final KotlinExpressionStatement body;
 
 		Accessor(AccessorBuilder<?> builder) {
-			this.annotations.addAll(builder.annotations);
+			this.annotations = builder.annotations.deepCopy();
+			this.code = builder.code;
 			this.body = builder.body;
 		}
 
 		boolean isEmptyBody() {
-			return this.body == null;
+			return (this.body == null && this.code == null);
 		}
 
+		CodeBlock getCode() {
+			return this.code;
+		}
+
+		@Deprecated(since = "0.20.0", forRemoval = true)
 		KotlinExpressionStatement getBody() {
 			return this.body;
 		}
 
 		@Override
-		public void annotate(Annotation annotation) {
-			this.annotations.add(annotation);
-		}
-
-		@Override
-		public List<Annotation> getAnnotations() {
-			return Collections.unmodifiableList(this.annotations);
+		public AnnotationContainer annotations() {
+			return this.annotations;
 		}
 
 	}

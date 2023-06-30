@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProjectRequestDocumentFactoryTests {
 
 	private final InitializrMetadata metadata = InitializrMetadataTestBuilder.withDefaults()
-			.addDependencyGroup("core", "security", "validation", "aop")
-			.addDependencyGroup("web", "web", "data-rest", "jersey").addDependencyGroup("data", "data-jpa", "jdbc")
-			.addDependencyGroup("database", "h2", "mysql").build();
+		.addDependencyGroup("core", "security", "validation", "aop")
+		.addDependencyGroup("web", "web", "data-rest", "jersey")
+		.addDependencyGroup("data", "data-jpa", "jdbc")
+		.addDependencyGroup("database", "h2", "mysql")
+		.build();
 
 	private final ProjectRequestDocumentFactory factory = new ProjectRequestDocumentFactory();
 
@@ -215,6 +217,16 @@ class ProjectRequestDocumentFactoryTests {
 		assertThat(document.getErrorState().getPackaging()).isNull();
 		assertThat(document.getErrorState().getType()).isTrue();
 		assertThat(document.getErrorState().getDependencies()).isNull();
+	}
+
+	@Test
+	void createDocumentExtendedType() {
+		ProjectRequest request = createProjectRequest();
+		request.setType("gradle-project-kotlin");
+		ProjectGeneratedEvent event = createProjectGeneratedEvent(request);
+		ProjectRequestDocument document = this.factory.createDocument(event);
+		assertThat(document.getType()).isEqualTo("gradle-project-kotlin");
+		assertThat(document.getBuildSystem()).isEqualTo("gradle");
 	}
 
 	@Test
