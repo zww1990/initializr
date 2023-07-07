@@ -194,16 +194,16 @@ public class GradleProjectGenerationConfiguration {
 	/**
 	 * Configuration specific to projects using Gradle 8.
 	 */
-	@Configuration
-	@ConditionalOnGradleVersion("8")
-	static class Gradle8ProjectGenerationConfiguration {
-
-		@Bean
-		GradleWrapperContributor gradle7WrapperContributor() {
-			return new GradleWrapperContributor("8");
-		}
-
-	}
+//	@Configuration
+//	@ConditionalOnGradleVersion("8")
+//	static class Gradle8ProjectGenerationConfiguration {
+//
+//		@Bean
+//		GradleWrapperContributor gradle7WrapperContributor() {
+//			return new GradleWrapperContributor("8");
+//		}
+//
+//	}
 
 	/**
 	 * Configuration specific to projects using Gradle (Groovy DSL).
