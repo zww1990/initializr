@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package io.spring.initializr.generator.spring.code;
 
 import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
-import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.ClassName;
 import io.spring.initializr.generator.language.TypeDeclaration;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
@@ -38,14 +38,14 @@ public class SourceCodeProjectGenerationConfiguration {
 
 	@Bean
 	public MainApplicationTypeCustomizer<TypeDeclaration> springBootApplicationAnnotator() {
-		return (typeDeclaration) -> typeDeclaration
-				.annotate(Annotation.name("org.springframework.boot.autoconfigure.SpringBootApplication"));
+		return (typeDeclaration) -> typeDeclaration.annotations()
+			.add(ClassName.of("org.springframework.boot.autoconfigure.SpringBootApplication"));
 	}
 
 	@Bean
 	public TestApplicationTypeCustomizer<TypeDeclaration> junitJupiterSpringBootTestTypeCustomizer() {
-		return (typeDeclaration) -> typeDeclaration
-				.annotate(Annotation.name("org.springframework.boot.test.context.SpringBootTest"));
+		return (typeDeclaration) -> typeDeclaration.annotations()
+			.add(ClassName.of("org.springframework.boot.test.context.SpringBootTest"));
 	}
 
 	/**

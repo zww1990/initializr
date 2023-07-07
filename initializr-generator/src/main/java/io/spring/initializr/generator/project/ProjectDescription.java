@@ -43,7 +43,7 @@ public interface ProjectDescription {
 	}
 
 	/**
-	 * Return a immutable mapping of requested {@link Dependency dependencies}.
+	 * Return an immutable mapping of requested {@link Dependency dependencies}.
 	 * @return the requested dependencies
 	 */
 	Map<String, Dependency> getRequestedDependencies();
@@ -104,7 +104,7 @@ public interface ProjectDescription {
 	String getName();
 
 	/**
-	 * Return a human readable description of the project.
+	 * Return a human-readable description of the project.
 	 * @return the description of the project or {@code null}
 	 */
 	String getDescription();

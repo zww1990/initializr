@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,8 +215,10 @@ public class InitializrMetadata {
 	 */
 	public void updateSpringBootVersions(List<DefaultMetadataElement> versionsMetadata) {
 		this.bootVersions.setContent(versionsMetadata);
-		List<Version> bootVersions = this.bootVersions.getContent().stream().map((it) -> Version.parse(it.getId()))
-				.collect(Collectors.toList());
+		List<Version> bootVersions = this.bootVersions.getContent()
+			.stream()
+			.map((it) -> Version.parse(it.getId()))
+			.collect(Collectors.toList());
 		VersionParser parser = new VersionParser(bootVersions);
 		this.dependencies.updateCompatibilityRange(parser);
 		this.configuration.getEnv().updateCompatibilityRange(parser);
@@ -311,7 +313,7 @@ public class InitializrMetadata {
 			}
 			else if (this.groupId.getContent() != null && this.artifactId.getContent() != null) {
 				return InitializrConfiguration
-						.cleanPackageName(this.groupId.getContent() + "." + this.artifactId.getContent());
+					.cleanPackageName(this.groupId.getContent() + "." + this.artifactId.getContent());
 			}
 			return null;
 		}

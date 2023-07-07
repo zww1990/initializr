@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,52 +23,36 @@ import io.spring.initializr.generator.version.Version;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DevToolsGradleBuildCustomizer}.
  *
  * @author Stephane Nicoll
  */
+@Deprecated
+@SuppressWarnings("removal")
 class DevToolsGradleBuildCustomizerTests {
 
 	private static final Dependency DEVTOOLS_DEPENDENCY = Dependency
-			.withCoordinates("org.springframework.boot", "spring-boot-devtools").build();
+		.withCoordinates("org.springframework.boot", "spring-boot-devtools")
+		.build();
 
 	@Test
-	void gradleWithDevtoolsAndSpringBootPriorTo23RC1CreatesDevelopmentOnlyConfiguration() {
+	void gradleWithDevtoolsFlagDependencyAsDevelopmentOnly() {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("devtools", DEVTOOLS_DEPENDENCY);
-		new DevToolsGradleBuildCustomizer(Version.parse("2.3.0.M4"), "devtools").customize(build);
-		assertThat(build.configurations().names()).containsOnly("developmentOnly");
-		assertThat(build.configurations().customizations()).singleElement().satisfies((configuration) -> {
-			assertThat(configuration.getName()).isEqualTo("runtimeClasspath");
-			assertThat(configuration.getExtendsFrom()).containsOnly("developmentOnly");
-		});
+		new DevToolsGradleBuildCustomizer(Version.parse("3.0.0"), "devtools").customize(build);
 		Dependency devtools = build.dependencies().get("devtools");
 		assertThat(devtools).isInstanceOf(GradleDependency.class);
 		assertThat(((GradleDependency) devtools).getConfiguration()).isEqualTo("developmentOnly");
 	}
 
 	@Test
-	void gradleWithDevtoolsAndSpringBoot23RC1OrLaterDoesNotCreateDevelopmentOnlyConfiguration() {
+	void gradleWithoutDevtoolsDoesNotModifyDependencies() {
 		GradleBuild build = new GradleBuild();
-		build.dependencies().add("devtools", DEVTOOLS_DEPENDENCY);
-		build.dependencies().add("devtools", DEVTOOLS_DEPENDENCY);
-		new DevToolsGradleBuildCustomizer(Version.parse("2.3.0.RC1"), "devtools").customize(build);
-		assertThat(build.configurations().names()).isEmpty();
-		Dependency devtools = build.dependencies().get("devtools");
-		assertThat(devtools).isInstanceOf(GradleDependency.class);
-		assertThat(((GradleDependency) devtools).getConfiguration()).isEqualTo("developmentOnly");
-	}
-
-	@Test
-	void gradleWithoutDevtoolsAndSpringBootPriorTo23RC1DoesNotCreateDevelopmentOnlyConfiguration() {
-		GradleBuild build = new GradleBuild();
-		build.dependencies().add("web", mock(Dependency.class));
-		new DevToolsGradleBuildCustomizer(Version.parse("2.3.0.M4"), "devtools").customize(build);
-		assertThat(build.configurations().names()).isEmpty();
-		assertThat(build.dependencies().ids()).containsOnly("web");
+		build.dependencies().add("ignored", DEVTOOLS_DEPENDENCY);
+		new DevToolsGradleBuildCustomizer(Version.parse("3.0.0"), "devtools").customize(build);
+		assertThat(build.dependencies().get("devtools")).isNull();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import org.springframework.util.StringUtils;
  * @author Olga Maciaszek-Sharma
  * @author Jafer Khan Shamshad
  * @author Joachim Pasquali
+ * @author Niklas Herder
  */
 public class MavenBuildWriter {
 
@@ -158,7 +159,7 @@ public class MavenBuildWriter {
 		writeElement(writer, "properties", () -> {
 			properties.values().forEach((entry) -> writeSingleElement(writer, entry.getKey(), entry.getValue()));
 			properties.versions((VersionProperty::toStandardFormat))
-					.forEach((entry) -> writeSingleElement(writer, entry.getKey(), entry.getValue()));
+				.forEach((entry) -> writeSingleElement(writer, entry.getKey(), entry.getValue()));
 		});
 	}
 
@@ -231,8 +232,10 @@ public class MavenBuildWriter {
 
 	private Collection<Dependency> writeDependencies(IndentingWriter writer, DependencyContainer dependencies,
 			Predicate<DependencyScope> filter) {
-		Collection<Dependency> candidates = dependencies.items().filter((dep) -> filter.test(dep.getScope()))
-				.sorted(getDependencyComparator()).collect(Collectors.toList());
+		Collection<Dependency> candidates = dependencies.items()
+			.filter((dep) -> filter.test(dep.getScope()))
+			.sorted(getDependencyComparator())
+			.collect(Collectors.toList());
 		writeCollection(writer, candidates, this::writeDependency);
 		return candidates;
 	}
@@ -286,10 +289,9 @@ public class MavenBuildWriter {
 		if (boms.isEmpty()) {
 			return;
 		}
-		writeElement(writer, "dependencyManagement",
-				() -> writeCollectionElement(writer, "dependencies", boms.items()
-						.sorted(Comparator.comparing(BillOfMaterials::getOrder)).collect(Collectors.toList()),
-						this::writeBom));
+		writeElement(writer, "dependencyManagement", () -> writeCollectionElement(writer, "dependencies",
+				boms.items().sorted(Comparator.comparing(BillOfMaterials::getOrder)).collect(Collectors.toList()),
+				this::writeBom));
 	}
 
 	private void writeBom(IndentingWriter writer, BillOfMaterials bom) {
@@ -314,7 +316,8 @@ public class MavenBuildWriter {
 		MavenBuildSettings settings = build.getSettings();
 		if (settings.getDefaultGoal() == null && settings.getFinalName() == null
 				&& settings.getSourceDirectory() == null && settings.getTestSourceDirectory() == null
-				&& build.resources().isEmpty() && build.testResources().isEmpty() && build.plugins().isEmpty()) {
+				&& build.resources().isEmpty() && build.testResources().isEmpty() && build.plugins().isEmpty()
+				&& build.extensions().isEmpty()) {
 			return;
 		}
 		writer.println();
@@ -325,6 +328,7 @@ public class MavenBuildWriter {
 			writeSingleElement(writer, "testSourceDirectory", settings.getTestSourceDirectory());
 			writeResources(writer, build.resources(), build.testResources());
 			writeCollectionElement(writer, "plugins", build.plugins().values(), this::writePlugin);
+			writeCollectionElement(writer, "extensions", build.extensions().values(), this::writeExtension);
 		});
 	}
 
@@ -426,7 +430,7 @@ public class MavenBuildWriter {
 
 	private List<MavenRepository> filterRepositories(Stream<MavenRepository> repositories) {
 		return repositories.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
-				.collect(Collectors.toList());
+			.collect(Collectors.toList());
 	}
 
 	private void writeRepository(IndentingWriter writer, MavenRepository repository) {
@@ -492,6 +496,14 @@ public class MavenBuildWriter {
 				}
 			});
 		}
+	}
+
+	private void writeExtension(IndentingWriter writer, MavenExtension extension) {
+		writeElement(writer, "extension", () -> {
+			writeSingleElement(writer, "groupId", extension.getGroupId());
+			writeSingleElement(writer, "artifactId", extension.getArtifactId());
+			writeSingleElement(writer, "version", extension.getVersion());
+		});
 	}
 
 	private void writeProfiles(IndentingWriter writer, MavenBuild build) {

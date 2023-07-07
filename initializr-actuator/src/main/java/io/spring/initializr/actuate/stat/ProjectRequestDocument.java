@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,13 +191,20 @@ public class ProjectRequestDocument {
 	@Override
 	public String toString() {
 		return new StringJoiner(", ", ProjectRequestDocument.class.getSimpleName() + "[", "]")
-				.add("generationTimestamp=" + this.generationTimestamp).add("type='" + this.type + "'")
-				.add("buildSystem='" + this.buildSystem + "'").add("groupId='" + this.groupId + "'")
-				.add("artifactId='" + this.artifactId + "'").add("javaVersion='" + this.javaVersion + "'")
-				.add("language='" + this.language + "'").add("packaging='" + this.packaging + "'")
-				.add("packageName='" + this.packageName + "'").add("version=" + this.version)
-				.add("client=" + this.client).add("dependencies=" + this.dependencies)
-				.add("errorState=" + this.errorState).toString();
+			.add("generationTimestamp=" + this.generationTimestamp)
+			.add("type='" + this.type + "'")
+			.add("buildSystem='" + this.buildSystem + "'")
+			.add("groupId='" + this.groupId + "'")
+			.add("artifactId='" + this.artifactId + "'")
+			.add("javaVersion='" + this.javaVersion + "'")
+			.add("language='" + this.language + "'")
+			.add("packaging='" + this.packaging + "'")
+			.add("packageName='" + this.packageName + "'")
+			.add("version=" + this.version)
+			.add("client=" + this.client)
+			.add("dependencies=" + this.dependencies)
+			.add("errorState=" + this.errorState)
+			.toString();
 	}
 
 	/**
@@ -232,8 +239,10 @@ public class ProjectRequestDocument {
 
 		@Override
 		public String toString() {
-			return new StringJoiner(", ", "{", "}").add("id='" + this.id + "'").add("major='" + this.major + "'")
-					.add("minor='" + this.minor + "'").toString();
+			return new StringJoiner(", ", "{", "}").add("id='" + this.id + "'")
+				.add("major='" + this.major + "'")
+				.add("minor='" + this.minor + "'")
+				.toString();
 		}
 
 	}
@@ -277,8 +286,10 @@ public class ProjectRequestDocument {
 
 		@Override
 		public String toString() {
-			return new StringJoiner(", ", "{", "}").add("id='" + this.id + "'").add("values=" + this.values)
-					.add("count=" + this.count).toString();
+			return new StringJoiner(", ", "{", "}").add("id='" + this.id + "'")
+				.add("values=" + this.values)
+				.add("count=" + this.count)
+				.toString();
 		}
 
 	}
@@ -321,8 +332,11 @@ public class ProjectRequestDocument {
 
 		@Override
 		public String toString() {
-			return new StringJoiner(", ", "{", "}").add("id='" + this.id + "'").add("version='" + this.version + "'")
-					.add("ip='" + this.ip + "'").add("country='" + this.country + "'").toString();
+			return new StringJoiner(", ", "{", "}").add("id='" + this.id + "'")
+				.add("version='" + this.version + "'")
+				.add("ip='" + this.ip + "'")
+				.add("country='" + this.country + "'")
+				.toString();
 		}
 
 	}
@@ -422,9 +436,13 @@ public class ProjectRequestDocument {
 		@Override
 		public String toString() {
 			return new StringJoiner(", ", "{", "}").add("invalid=" + this.invalid)
-					.add("javaVersion=" + this.javaVersion).add("language=" + this.language)
-					.add("packaging=" + this.packaging).add("type=" + this.type)
-					.add("dependencies=" + this.dependencies).add("message='" + this.message + "'").toString();
+				.add("javaVersion=" + this.javaVersion)
+				.add("language=" + this.language)
+				.add("packaging=" + this.packaging)
+				.add("type=" + this.type)
+				.add("dependencies=" + this.dependencies)
+				.add("message='" + this.message + "'")
+				.toString();
 		}
 
 	}

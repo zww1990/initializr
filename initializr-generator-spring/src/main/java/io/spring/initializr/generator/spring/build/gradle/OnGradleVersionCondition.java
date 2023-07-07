@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class OnGradleVersionCondition extends ProjectGenerationCondition {
 
 	private static final VersionRange GRADLE_6_VERSION_RANGE = VersionParser.DEFAULT
-			.parseRange("[2.2.2.RELEASE,2.5.0-RC1)");
+		.parseRange("[2.2.2.RELEASE,2.5.0-RC1)");
 
-	private static final VersionRange GRADLE_7_VERSION_RANGE = VersionParser.DEFAULT.parseRange("2.5.0-RC1");
+	private static final VersionRange GRADLE_7_VERSION_RANGE = VersionParser.DEFAULT.parseRange("[2.5.0-RC1,2.7.10)");
+
+	private static final VersionRange GRADLE_8_VERSION_RANGE = VersionParser.DEFAULT.parseRange("2.7.10");
 
 	@Override
 	protected boolean matches(ProjectDescription description, ConditionContext context,
@@ -49,7 +51,7 @@ public class OnGradleVersionCondition extends ProjectGenerationCondition {
 			return false;
 		}
 		String[] values = (String[]) metadata.getAnnotationAttributes(ConditionalOnGradleVersion.class.getName())
-				.get("value");
+			.get("value");
 		return Arrays.asList(values).contains(gradleGeneration);
 	}
 
@@ -62,6 +64,9 @@ public class OnGradleVersionCondition extends ProjectGenerationCondition {
 		}
 		else if (GRADLE_7_VERSION_RANGE.match(platformVersion)) {
 			return "7";
+		}
+		else if (GRADLE_8_VERSION_RANGE.match(platformVersion)) {
+			return "8";
 		}
 		else {
 			return null;
