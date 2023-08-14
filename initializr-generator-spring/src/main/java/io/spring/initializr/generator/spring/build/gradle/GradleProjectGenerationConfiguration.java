@@ -139,6 +139,7 @@ public class GradleProjectGenerationConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnGradleVersion("6")
+	@Deprecated
 	static class Gradle6ProjectGenerationConfiguration {
 
 		@Bean
@@ -170,7 +171,7 @@ public class GradleProjectGenerationConfiguration {
 	static class Gradle8ProjectGenerationConfiguration {
 
 		@Bean
-		GradleWrapperContributor gradle7WrapperContributor() {
+		GradleWrapperContributor gradle8WrapperContributor() {
 			return new GradleWrapperContributor("8");
 		}
 
