@@ -117,6 +117,7 @@ public class DefaultProjectRequestToDescriptionConverter
 		validateType(request.getType(), metadata);
 		validateLanguage(request.getLanguage(), metadata);
 		validatePackaging(request.getPackaging(), metadata);
+		validatePropertyFile(request.getPropertyFile(), metadata);
 		validateDependencies(request, metadata);
 	}
 
@@ -157,6 +158,16 @@ public class DefaultProjectRequestToDescriptionConverter
 			if (packagingFromMetadata == null) {
 				throw new InvalidProjectRequestException(
 						"Unknown packaging '" + packaging + "' check project metadata");
+			}
+		}
+	}
+
+	private void validatePropertyFile(String propertyFile, InitializrMetadata metadata) {
+		if (propertyFile != null) {
+			DefaultMetadataElement propertyFileFromMetadata = metadata.getPropertyFiles().get(propertyFile);
+			if (propertyFileFromMetadata == null) {
+				throw new InvalidProjectRequestException(
+						"Unknown propertyFile '" + propertyFile + "' check project metadata");
 			}
 		}
 	}
