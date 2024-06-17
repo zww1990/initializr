@@ -24,7 +24,6 @@ import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
 import io.spring.initializr.generator.condition.ConditionalOnPackaging;
-import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
@@ -46,11 +45,11 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBuildSystem(MavenBuildSystem.ID)
 public class MavenProjectGenerationConfiguration {
 
-//	@Bean
-//	DefaultMavenBuildCustomizer initializrMetadataMavenBuildCustomizer(ProjectDescription description,
-//			InitializrMetadata metadata) {
-//		return new DefaultMavenBuildCustomizer(description, metadata);
-//	}
+	@Bean
+	DefaultMavenBuildCustomizer initializrMetadataMavenBuildCustomizer(ProjectDescription description,
+			InitializrMetadata metadata) {
+		return new DefaultMavenBuildCustomizer(description, metadata);
+	}
 
 //	@Bean
 //	MavenWrapperContributor mavenWrapperContributor() {

@@ -24,6 +24,8 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.propertyfile.properties.Properties;
 import io.spring.initializr.generator.propertyfile.yml.Yml;
+import io.spring.initializr.generator.spring.properties.ApplicationProperties;
+import io.spring.initializr.generator.spring.properties.ApplicationPropertiesContributor;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.context.annotation.Bean;
@@ -45,19 +47,15 @@ public class ApplicationConfigurationProjectGenerationConfiguration {
 
     @Bean
     @ConditionalOnPropertyFile(Properties.ID)
-    public ApplicationPropertiesContributor applicationPropertiesContributor() {
-        return new ApplicationPropertiesContributor();
+    public ApplicationPropertiesContributor applicationPropertiesContributor(
+            ApplicationProperties properties) {
+        return new ApplicationPropertiesContributor(properties);
     }
 
     @Bean
     @ConditionalOnPropertyFile(Yml.ID)
     public ApplicationYmlContributor applicationYmlContributor() {
         return new ApplicationYmlContributor();
-    }
-
-    @Bean
-    public WebFoldersContributor webFoldersContributor(Build build, InitializrMetadata metadata) {
-        return new WebFoldersContributor(build, metadata);
     }
 
     @Bean
