@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import org.assertj.core.internal.Failures;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,17 +38,12 @@ class MavenWrapperContributorTests {
 	@TempDir
 	Path directory;
 
-	static Stream<Arguments> parameters() {
-		return Stream.of(Arguments.arguments("3.8"), Arguments.arguments("3"));
-	}
-
 	@ParameterizedTest(name = "Maven {0}")
-	@MethodSource("parameters")
+	@ValueSource(strings = "3")
 	void mavenWrapperSetExecutableFlagOnScripts(String mavenVersion) throws IOException {
 		Path projectDir = contribute(mavenVersion);
 		assertThat(projectDir.resolve("mvnw")).isRegularFile().isExecutable();
 		assertThat(projectDir.resolve("mvnw.cmd")).isRegularFile().isExecutable();
-		assertThat(projectDir.resolve(".mvn/wrapper/maven-wrapper.jar")).isRegularFile().satisfies(isNotExecutable());
 		assertThat(projectDir.resolve(".mvn/wrapper/maven-wrapper.properties")).isRegularFile()
 			.satisfies(isNotExecutable());
 	}

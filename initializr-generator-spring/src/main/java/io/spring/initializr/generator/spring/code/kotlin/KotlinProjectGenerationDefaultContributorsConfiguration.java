@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Jean-Baptiste Nizet
+ * @author Moritz Halbritter
  */
 @Configuration
 class KotlinProjectGenerationDefaultContributorsConfiguration {
@@ -68,14 +69,27 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	@Bean
 	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
 	KotlinJpaGradleBuildCustomizer kotlinJpaGradleBuildCustomizer(InitializrMetadata metadata,
-			KotlinProjectSettings settings) {
-		return new KotlinJpaGradleBuildCustomizer(metadata, settings);
+			KotlinProjectSettings settings, ProjectDescription projectDescription) {
+		return new KotlinJpaGradleBuildCustomizer(metadata, settings, projectDescription);
 	}
 
 	@Bean
 	@ConditionalOnBuildSystem(MavenBuildSystem.ID)
-	KotlinJpaMavenBuildCustomizer kotlinJpaMavenBuildCustomizer(InitializrMetadata metadata) {
-		return new KotlinJpaMavenBuildCustomizer(metadata);
+	KotlinJpaMavenBuildCustomizer kotlinJpaMavenBuildCustomizer(InitializrMetadata metadata,
+			ProjectDescription projectDescription) {
+		return new KotlinJpaMavenBuildCustomizer(metadata, projectDescription);
+	}
+
+	@Bean
+	@ConditionalOnBuildSystem(value = GradleBuildSystem.ID, dialect = GradleBuildSystem.DIALECT_KOTLIN)
+	KotlinGradleBuildCustomizer kotlinBuildCustomizerKotlinDsl(KotlinProjectSettings kotlinProjectSettings) {
+		return new KotlinGradleBuildCustomizer(kotlinProjectSettings, '\"');
+	}
+
+	@Bean
+	@ConditionalOnBuildSystem(value = GradleBuildSystem.ID, dialect = GradleBuildSystem.DIALECT_GROOVY)
+	KotlinGradleBuildCustomizer kotlinBuildCustomizerGroovyDsl(KotlinProjectSettings kotlinProjectSettings) {
+		return new KotlinGradleBuildCustomizer(kotlinProjectSettings, '\'');
 	}
 
 	/**
@@ -122,38 +136,6 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 							description.getApplicationName()));
 				typeDeclaration.addFunctionDeclaration(configure);
 			};
-		}
-
-	}
-
-	/**
-	 * Configuration for Kotlin projects built with Gradle (Groovy DSL).
-	 *
-	 * @author Andy Wilkinson
-	 */
-	@Configuration
-	@ConditionalOnBuildSystem(id = GradleBuildSystem.ID, dialect = GradleBuildSystem.DIALECT_GROOVY)
-	static class KotlinGradleProjectConfiguration {
-
-		@Bean
-		KotlinGradleBuildCustomizer kotlinBuildCustomizer(KotlinProjectSettings kotlinProjectSettings) {
-			return new GroovyDslKotlinGradleBuildCustomizer(kotlinProjectSettings);
-		}
-
-	}
-
-	/**
-	 * Configuration for Kotlin projects built with Gradle (Kotlin DSL).
-	 *
-	 * @author Jean-Baptiste Nizet
-	 */
-	@Configuration
-	@ConditionalOnBuildSystem(id = GradleBuildSystem.ID, dialect = GradleBuildSystem.DIALECT_KOTLIN)
-	static class KotlinGradleKtsProjectConfiguration {
-
-		@Bean
-		KotlinDslKotlinGradleBuildCustomizer kotlinBuildCustomizer(KotlinProjectSettings kotlinProjectSettings) {
-			return new KotlinDslKotlinGradleBuildCustomizer(kotlinProjectSettings);
 		}
 
 	}

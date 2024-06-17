@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,34 +62,17 @@ class KotlinDslGradleBuildWriterTests extends GradleBuildWriterTests {
 		build.settings().sourceCompatibility(sourceCompatibility);
 		assertThat(write(build)).contains("""
 				java {
-					sourceCompatibility = %s
+					toolchain {
+						languageVersion = JavaLanguageVersion.of(%s)
+					}
 				}
 				""".formatted(javaVersionConstant));
 	}
 
 	static Stream<Arguments> sourceCompatibilityParameters() {
-		return Stream.of(Arguments.arguments("1.8", "JavaVersion.VERSION_1_8"),
-				Arguments.arguments("8", "JavaVersion.VERSION_1_8"),
-				Arguments.arguments("1.9", "JavaVersion.VERSION_1_9"),
-				Arguments.arguments("9", "JavaVersion.VERSION_1_9"),
-				Arguments.arguments("1.10", "JavaVersion.VERSION_1_10"),
-				Arguments.arguments("10", "JavaVersion.VERSION_1_10"),
-				Arguments.arguments(null, "JavaVersion.VERSION_11"),
-				Arguments.arguments("11", "JavaVersion.VERSION_11"),
-				Arguments.arguments("12", "JavaVersion.VERSION_12"),
-				Arguments.arguments("13", "JavaVersion.VERSION_13"),
-				Arguments.arguments("14", "JavaVersion.VERSION_14"),
-				Arguments.arguments("15", "JavaVersion.VERSION_15"),
-				Arguments.arguments("16", "JavaVersion.VERSION_16"),
-				Arguments.arguments("17", "JavaVersion.VERSION_17"),
-				Arguments.arguments("18", "JavaVersion.VERSION_18"),
-				Arguments.arguments("19", "JavaVersion.VERSION_19"),
-				Arguments.arguments("20", "JavaVersion.VERSION_20"),
-				Arguments.arguments("21", "JavaVersion.VERSION_21"),
-				Arguments.arguments("22", "JavaVersion.VERSION_22"),
-				Arguments.arguments("23", "JavaVersion.VERSION_23"),
-				Arguments.arguments("24", "JavaVersion.VERSION_24"),
-				Arguments.arguments("25", "JavaVersion.VERSION_HIGHER"));
+		return Stream.of(Arguments.arguments("1.8", "8"), Arguments.arguments("8", "8"), Arguments.arguments(null, "8"),
+				Arguments.arguments("11", "11"), Arguments.arguments("17", "17"), Arguments.arguments("21", "21"),
+				Arguments.arguments("22", "22"));
 	}
 
 	@Test
@@ -616,6 +599,25 @@ class KotlinDslGradleBuildWriterTests extends GradleBuildWriterTests {
 		GradleBuild build = new GradleBuild();
 		build.settings().version("1.2.4.RELEASE");
 		assertThat(write(build)).contains("version = \"1.2.4.RELEASE\"");
+	}
+
+	@Test
+	void shouldCustomizeExtensions() {
+		GradleBuild build = new GradleBuild();
+		build.extensions().customize("kotlin", (kotlin) -> kotlin.nested("compilerOptions", (compilerOptions) -> {
+			compilerOptions.attributeWithType("jvmTarget", "JvmTarget.JVM_21",
+					"org.jetbrains.kotlin.gradle.dsl.JvmTarget");
+			compilerOptions.invoke("freeCompilerArgs.addAll", "\"-Xjsr305=strict\"", "\"-Xexport-kdoc\"");
+		}));
+		String written = write(build);
+		assertThat(written).contains("import org.jetbrains.kotlin.gradle.dsl.JvmTarget");
+		assertThat(written).contains("""
+				kotlin {
+					compilerOptions {
+						freeCompilerArgs.addAll("-Xjsr305=strict", "-Xexport-kdoc")
+						jvmTarget = JvmTarget.JVM_21
+					}
+				}""");
 	}
 
 	protected String write(GradleBuild build) {

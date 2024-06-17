@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -89,6 +90,17 @@ class InitializrStatsAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void shouldBackOffIfElasticUriIsNotSet() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ProjectGenerationStatPublisher.class));
+	}
+
+	@Test
+	void shouldBackOffIfElasticUriIsEmpty() {
+		this.contextRunner.withPropertyValues("initializr.stats.elastic.uri=")
+			.run((context) -> assertThat(context).doesNotHaveBean(ProjectGenerationStatPublisher.class));
+	}
+
 	@Configuration
 	static class CustomStatsRetryTemplateConfiguration {
 
@@ -117,7 +129,16 @@ class InitializrStatsAutoConfigurationTests {
 	@Import(InfrastructureConfiguration.class)
 	static class CustomRestTemplateConfiguration {
 
-		private static final ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
+		private static final ResponseErrorHandler errorHandler = new ResponseErrorHandler() {
+			@Override
+			public boolean hasError(ClientHttpResponse response) {
+				return false;
+			}
+
+			@Override
+			public void handleError(ClientHttpResponse response) {
+			}
+		};
 
 		@Bean
 		RestTemplateCustomizer testRestTemplateCustomizer() {

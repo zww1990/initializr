@@ -10,7 +10,7 @@
 	<description>JVM-based project generator</description>
 	<url>https://github.com/spring-io/initializr</url>
 	<organization>
-		<name>Pivotal Software, Inc.</name>
+		<name>Broadcom Inc.</name>
 		<url>https://www.spring.io</url>
 	</organization>
 	<licenses>
@@ -28,14 +28,14 @@
 		<developer>
 			<name>Spring</name>
 			<email>ask@spring.io</email>
-			<organization>VMware, Inc.</organization>
+			<organization>Broadcom Inc.</organization>
 			<organizationUrl>https://www.spring.io</organizationUrl>
 		</developer>
 	</developers>
 
 	<properties>
+		<revision>0.22.0-SNAPSHOT</revision>
 		<maven.test.skip>true</maven.test.skip>
-		<revision>0.21.0-SNAPSHOT</revision>
 		<disable.checks>false</disable.checks>
 		<git.url>https://github.com/spring-io/initializr</git.url>
 		<git.connection>scm:git:https://github.com/spring-io/initializr</git.connection>
@@ -69,6 +69,16 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.3.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>3.1.1</version>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -82,8 +92,8 @@
 				</property>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.41</spring-javaformat.version>
-				<nohttp-checkstyle.version>0.0.10</nohttp-checkstyle.version>
+				<spring-javaformat.version>0.0.42</spring-javaformat.version>
+				<nohttp-checkstyle.version>0.0.11</nohttp-checkstyle.version>
 			</properties>
 			<build>
 				<plugins>
@@ -103,12 +113,12 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
-						<version>3.3.0</version>
+						<version>3.4.0</version>
 						<dependencies>
 							<dependency>
 								<groupId>com.puppycrawl.tools</groupId>
 								<artifactId>checkstyle</artifactId>
-								<version>10.12.7</version>
+								<version>10.17.0</version>
 							</dependency>
 							<dependency>
 								<groupId>io.spring.javaformat</groupId>
