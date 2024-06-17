@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
+import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.contributor.ProjectContributor;
 import io.spring.initializr.metadata.InitializrMetadata;
 
@@ -19,9 +21,13 @@ import io.spring.initializr.metadata.InitializrMetadata;
  */
 public class JavaFoldersContributor implements ProjectContributor {
 	private final InitializrMetadata metadata;
+	private final Build build;
+	private final ProjectDescription projectDescription;
 
-	public JavaFoldersContributor(InitializrMetadata metadata) {
+	public JavaFoldersContributor(Build build, InitializrMetadata metadata, ProjectDescription projectDescription) {
 		this.metadata = metadata;
+		this.build = build;
+		this.projectDescription = projectDescription;
 	}
 
 	@Override

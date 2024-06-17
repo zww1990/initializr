@@ -19,13 +19,8 @@ package io.spring.initializr.generator.spring.configuration;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.condition.ConditionalOnLanguage;
-import io.spring.initializr.generator.condition.ConditionalOnPropertyFile;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.propertyfile.properties.Properties;
-import io.spring.initializr.generator.propertyfile.yml.Yml;
-import io.spring.initializr.generator.spring.properties.ApplicationProperties;
-import io.spring.initializr.generator.spring.properties.ApplicationPropertiesContributor;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.context.annotation.Bean;
@@ -45,23 +40,11 @@ public class ApplicationConfigurationProjectGenerationConfiguration {
         return new WebFoldersContributor(build, metadata, projectDescription);
     }
 
-//    @Bean
-//    @ConditionalOnPropertyFile(Properties.ID)
-//    public ApplicationPropertiesContributor applicationPropertiesContributor(
-//            ApplicationProperties properties) {
-//        return new ApplicationPropertiesContributor(properties);
-//    }
-
-    @Bean
-    @ConditionalOnPropertyFile(Yml.ID)
-    public ApplicationYmlContributor applicationYmlContributor() {
-        return new ApplicationYmlContributor();
-    }
-
     @Bean
     @ConditionalOnLanguage(JavaLanguage.ID)
-    public JavaFoldersContributor javaFoldersContributor(InitializrMetadata metadata) {
-        return new JavaFoldersContributor(metadata);
+    JavaFoldersContributor javaFoldersContributor(Build build, InitializrMetadata metadata,
+            ProjectDescription projectDescription) {
+        return new JavaFoldersContributor(build, metadata, projectDescription);
     }
 
 }
