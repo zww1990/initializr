@@ -16,8 +16,10 @@
 
 package io.spring.initializr.generator.spring.properties;
 
+import io.spring.initializr.generator.condition.ConditionalOnPropertyFile;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
+import io.spring.initializr.generator.propertyfile.properties.Properties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 
@@ -30,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 class ApplicationPropertiesProjectGenerationConfiguration {
 
 	@Bean
+	@ConditionalOnPropertyFile(Properties.ID)
 	ApplicationProperties applicationProperties(ObjectProvider<ApplicationPropertiesCustomizer> customizers) {
 		ApplicationProperties properties = new ApplicationProperties();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(properties));
@@ -37,6 +40,7 @@ class ApplicationPropertiesProjectGenerationConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnPropertyFile(Properties.ID)
 	ApplicationPropertiesContributor applicationPropertiesContributor(ApplicationProperties applicationProperties) {
 		return new ApplicationPropertiesContributor(applicationProperties);
 	}
