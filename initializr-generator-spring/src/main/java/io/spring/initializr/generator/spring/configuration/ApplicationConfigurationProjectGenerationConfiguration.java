@@ -45,12 +45,12 @@ public class ApplicationConfigurationProjectGenerationConfiguration {
         return new WebFoldersContributor(build, metadata, projectDescription);
     }
 
-    @Bean
-    @ConditionalOnPropertyFile(Properties.ID)
-    public ApplicationPropertiesContributor applicationPropertiesContributor(
-            ApplicationProperties properties) {
-        return new ApplicationPropertiesContributor(properties);
-    }
+//    @Bean
+//    @ConditionalOnPropertyFile(Properties.ID)
+//    public ApplicationPropertiesContributor applicationPropertiesContributor(
+//            ApplicationProperties properties) {
+//        return new ApplicationPropertiesContributor(properties);
+//    }
 
     @Bean
     @ConditionalOnPropertyFile(Yml.ID)

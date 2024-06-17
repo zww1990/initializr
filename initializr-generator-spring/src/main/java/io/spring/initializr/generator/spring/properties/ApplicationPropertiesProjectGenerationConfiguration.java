@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 class ApplicationPropertiesProjectGenerationConfiguration {
 
 	@Bean
-//	@ConditionalOnPropertyFile(Properties.ID)
+	@ConditionalOnPropertyFile(Properties.ID)
 	ApplicationProperties applicationProperties(ObjectProvider<ApplicationPropertiesCustomizer> customizers) {
 		ApplicationProperties properties = new ApplicationProperties();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(properties));
