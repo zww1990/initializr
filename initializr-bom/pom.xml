@@ -38,11 +38,11 @@
 				<artifactId>initializr-generator-spring</artifactId>
 				<version>${revision}</version>
 			</dependency>
-			<dependency>
+			<!--<dependency>
 				<groupId>io.spring.initializr</groupId>
 				<artifactId>initializr-generator-test</artifactId>
 				<version>${revision}</version>
-			</dependency>
+			</dependency>-->
 			<dependency>
 				<groupId>io.spring.initializr</groupId>
 				<artifactId>initializr-metadata</artifactId>
