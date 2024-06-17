@@ -19,14 +19,15 @@ package io.spring.initializr.web.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
@@ -127,7 +128,8 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		ProjectGenerationResult result = this.projectGenerationInvoker.invokeProjectStructureGeneration(request);
 		Path archive = createArchive(result, "zip", ZipArchiveOutputStream::new, ZipArchiveEntry::new,
 				ZipArchiveEntry::setUnixMode);
-		return upload(archive, result.getRootDirectory(), generateFileName(request, "zip"), "application/zip");
+		return upload(archive, result.getRootDirectory(),
+				generateFileName(result.getProjectDescription().getArtifactId(), "zip"), "application/zip");
 	}
 
 	@RequestMapping(path = "/starter.tgz", method = { RequestMethod.GET, RequestMethod.POST },
@@ -136,8 +138,8 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		ProjectGenerationResult result = this.projectGenerationInvoker.invokeProjectStructureGeneration(request);
 		Path archive = createArchive(result, "tar.gz", this::createTarArchiveOutputStream, TarArchiveEntry::new,
 				TarArchiveEntry::setMode);
-		return upload(archive, result.getRootDirectory(), generateFileName(request, "tar.gz"),
-				"application/x-compress");
+		return upload(archive, result.getRootDirectory(),
+				generateFileName(result.getProjectDescription().getArtifactId(), "tar.gz"), "application/x-compress");
 	}
 
 	private TarArchiveOutputStream createTarArchiveOutputStream(OutputStream output) {
@@ -152,15 +154,15 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 	}
 
 	private <T extends ArchiveEntry> Path createArchive(ProjectGenerationResult result, String fileExtension,
-			Function<OutputStream, ? extends ArchiveOutputStream> archiveOutputStream,
+			Function<OutputStream, ? extends ArchiveOutputStream<T>> archiveOutputStream,
 			BiFunction<File, String, T> archiveEntry, BiConsumer<T, Integer> setMode) throws IOException {
 		Path archive = this.projectGenerationInvoker.createDistributionFile(result.getRootDirectory(),
 				"." + fileExtension);
 		String wrapperScript = getWrapperScript(result.getProjectDescription());
-		try (ArchiveOutputStream output = archiveOutputStream.apply(Files.newOutputStream(archive))) {
-			Files.walk(result.getRootDirectory())
-				.filter((path) -> !result.getRootDirectory().equals(path))
-				.forEach((path) -> {
+		try (ArchiveOutputStream<T> output = archiveOutputStream.apply(Files.newOutputStream(archive))) {
+			Stream<Path> files = Files.walk(result.getRootDirectory());
+			try (files) {
+				files.filter((path) -> !result.getRootDirectory().equals(path)).forEach((path) -> {
 					try {
 						String entryName = getEntryName(result.getRootDirectory(), path);
 						T entry = archiveEntry.apply(path.toFile(), entryName);
@@ -175,6 +177,7 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 						throw new IllegalStateException(ex);
 					}
 				});
+			}
 		}
 		return archive;
 	}
@@ -194,16 +197,10 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		return UnixStat.FILE_FLAG | (entryName.equals(wrapperScript) ? 0755 : UnixStat.DEFAULT_FILE_PERM);
 	}
 
-	private String generateFileName(R request, String extension) {
-		String candidate = (StringUtils.hasText(request.getArtifactId()) ? request.getArtifactId()
+	private String generateFileName(String artifactId, String extension) {
+		String candidate = (StringUtils.hasText(artifactId) ? artifactId
 				: this.metadataProvider.get().getArtifactId().getContent());
-		String tmp = candidate.replaceAll(" ", "_");
-		try {
-			return URLEncoder.encode(tmp, "UTF-8") + "." + extension;
-		}
-		catch (UnsupportedEncodingException ex) {
-			throw new IllegalStateException("Cannot encode URL", ex);
-		}
+		return URLEncoder.encode(candidate, StandardCharsets.UTF_8) + "." + extension;
 	}
 
 	private static String getWrapperScript(ProjectDescription description) {

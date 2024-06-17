@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import io.spring.initializr.generator.version.VersionReference;
  * A {@link GradleBuild} writer for {@code build.gradle}.
  *
  * @author Jean-Baptiste Nizet
+ * @author Moritz Halbritter
  */
 public class GroovyDslGradleBuildWriter extends GradleBuildWriter {
 
@@ -84,15 +85,6 @@ public class GroovyDslGradleBuildWriter extends GradleBuildWriter {
 			string += " version '" + plugin.getVersion() + "'";
 		}
 		return string;
-	}
-
-	@Override
-	protected void writeJavaSourceCompatibility(IndentingWriter writer, GradleBuildSettings settings) {
-		writer.println("java {");
-		writer.indented(
-				() -> writer.println(String.format("sourceCompatibility = '%s'", settings.getSourceCompatibility())));
-		writer.println("}");
-		writer.println("");
 	}
 
 	@Override
@@ -201,7 +193,7 @@ public class GroovyDslGradleBuildWriter extends GradleBuildWriter {
 	}
 
 	@Override
-	protected String invocationAsString(GradleTask.Invocation invocation) {
+	protected String invocationAsString(Invocation invocation) {
 		String arguments = (invocation.getArguments().isEmpty()) ? "()"
 				: " " + String.join(", ", invocation.getArguments());
 		return invocation.getTarget() + arguments;

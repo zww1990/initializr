@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@SuppressWarnings("removal")
 public class GradleTaskTests {
 
 	@Test

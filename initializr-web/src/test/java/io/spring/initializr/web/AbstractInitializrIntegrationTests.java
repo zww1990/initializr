@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package io.spring.initializr.web;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
@@ -257,8 +257,8 @@ public abstract class AbstractInitializrIntegrationTests {
 	private void untar(Path archiveFile, Path project) throws IOException {
 		try (TarArchiveInputStream input = new TarArchiveInputStream(
 				new GzipCompressorInputStream(Files.newInputStream(archiveFile)))) {
-			TarArchiveEntry entry = null;
-			while ((entry = input.getNextTarEntry()) != null) {
+			TarArchiveEntry entry;
+			while ((entry = input.getNextEntry()) != null) {
 				Path path = project.resolve(entry.getName());
 				if (entry.isDirectory()) {
 					Files.createDirectories(path);
@@ -273,7 +273,7 @@ public abstract class AbstractInitializrIntegrationTests {
 	}
 
 	private void unzip(Path archiveFile, Path project) throws IOException {
-		try (ZipFile zip = new ZipFile(archiveFile.toFile())) {
+		try (ZipFile zip = ZipFile.builder().setPath(archiveFile).get()) {
 			Enumeration<? extends ZipArchiveEntry> entries = zip.getEntries();
 			while (entries.hasMoreElements()) {
 				ZipArchiveEntry entry = entries.nextElement();
@@ -332,13 +332,12 @@ public abstract class AbstractInitializrIntegrationTests {
 		try {
 			ClassPathResource resource = new ClassPathResource(path);
 			try (InputStream in = resource.getInputStream()) {
-				String json = StreamUtils.copyToString(in, Charset.forName("UTF-8"));
+				String json = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
 				String placeholder = "";
 				if (this instanceof AbstractInitializrControllerIntegrationTests) {
 					placeholder = ((AbstractInitializrControllerIntegrationTests) this).host;
 				}
-				if (this instanceof AbstractFullStackInitializrIntegrationTests) {
-					AbstractFullStackInitializrIntegrationTests test = (AbstractFullStackInitializrIntegrationTests) this;
+				if (this instanceof AbstractFullStackInitializrIntegrationTests test) {
 					placeholder = test.host + ":" + test.port;
 				}
 				// Let's parse the port as it is random
@@ -389,9 +388,9 @@ public abstract class AbstractInitializrIntegrationTests {
 
 		OTHERS_EXECUTE(0001);
 
-		private int mask;
+		private final int mask;
 
-		private PosixFilePermission filePermission;
+		private final PosixFilePermission filePermission;
 
 		BitMaskFilePermission(int mask) {
 			this.mask = mask;

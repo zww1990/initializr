@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.spring.configuration;
 
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.metadata.InitializrMetadata;
 
@@ -26,18 +27,15 @@ import org.springframework.context.annotation.Bean;
  * Configuration for application-related contributions to a generated project.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 @ProjectGenerationConfiguration
 public class ApplicationConfigurationProjectGenerationConfiguration {
 
 	@Bean
-	public ApplicationPropertiesContributor applicationPropertiesContributor() {
-		return new ApplicationPropertiesContributor();
-	}
-
-	@Bean
-	public WebFoldersContributor webFoldersContributor(Build build, InitializrMetadata metadata) {
-		return new WebFoldersContributor(build, metadata);
+	WebFoldersContributor webFoldersContributor(Build build, InitializrMetadata metadata,
+			ProjectDescription projectDescription) {
+		return new WebFoldersContributor(build, metadata, projectDescription);
 	}
 
 }

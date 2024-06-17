@@ -24,12 +24,13 @@ import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
 import io.spring.initializr.generator.condition.ConditionalOnPackaging;
-import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
+import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
 import io.spring.initializr.generator.spring.util.LambdaSafe;
+import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -45,14 +46,13 @@ import org.springframework.context.annotation.Bean;
 public class MavenProjectGenerationConfiguration {
 
 	@Bean
-	@ConditionalOnPlatformVersion("[2.0.0.M1,3.1.0-RC1)")
-	public MavenWrapperContributor maven38WrapperContributor() {
-		return new MavenWrapperContributor("3.8");
+	DefaultMavenBuildCustomizer initializrMetadataMavenBuildCustomizer(ProjectDescription description,
+			InitializrMetadata metadata) {
+		return new DefaultMavenBuildCustomizer(description, metadata);
 	}
 
 	@Bean
-	@ConditionalOnPlatformVersion("3.1.0-RC1")
-	public MavenWrapperContributor mavenWrapperContributor() {
+	MavenWrapperContributor mavenWrapperContributor() {
 		return new MavenWrapperContributor("3");
 	}
 
@@ -75,6 +75,11 @@ public class MavenProjectGenerationConfiguration {
 	public MavenBuildProjectContributor mavenBuildProjectContributor(MavenBuild build,
 			IndentingWriterFactory indentingWriterFactory) {
 		return new MavenBuildProjectContributor(build, indentingWriterFactory);
+	}
+
+	@Bean
+	ParentOverridesHelpDocumentCustomizer parentOverridesHelpDocumentCustomizer(MavenBuild build) {
+		return new ParentOverridesHelpDocumentCustomizer(build.getSettings());
 	}
 
 	@Bean

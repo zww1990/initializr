@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class ProjectGenerationControllerIntegrationTests extends AbstractInitializrCont
 		assertArchiveResponseHeaders(entity, MediaType.valueOf("application/x-compress"), "spring-boot-service.tar.gz");
 		ProjectStructure project = tgzProjectAssert(entity.getBody());
 		assertThat(project).containsFiles(
-				"spring-boot-service/src/test/java/com/spring/boot/service/springbootservice/SpringBootServiceApplicationTests.java");
+				"spring-boot-service/src/test/java/com/spring/boot/service/spring_boot_service/SpringBootServiceApplicationTests.java");
 	}
 
 	private void assertArchiveResponseHeaders(ResponseEntity<byte[]> entity, MediaType contentType, String fileName) {
@@ -147,7 +147,7 @@ class ProjectGenerationControllerIntegrationTests extends AbstractInitializrCont
 		assertThat(project).containsFiles("src/main/kotlin/com/example/demo/DemoApplication.kt",
 				"src/test/kotlin/com/example/demo/DemoApplicationTests.kt",
 				"src/main/resources/application.properties");
-		assertThat(project).mavenBuild().hasDependenciesSize(4).hasProperty("kotlin.version", "1.4.31");
+		assertThat(project).mavenBuild().hasDependenciesSize(5).hasProperty("kotlin.version", "1.4.31");
 	}
 
 	@Test

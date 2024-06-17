@@ -20,12 +20,13 @@ import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.Dependency.Exclusion;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
 import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.spring.build.maven.DefaultMavenBuildCustomizer;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
+ * @author Moritz Halbritter
  */
 @ProjectGenerationConfiguration
 public class BuildProjectGenerationConfiguration {
@@ -58,20 +60,24 @@ public class BuildProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public DefaultStarterBuildCustomizer defaultStarterContributor(InitializrMetadata metadata) {
-		return new DefaultStarterBuildCustomizer(metadata);
+	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
+	BuildCustomizer<Build> junitLauncherContributor() {
+		return (build) -> build.dependencies()
+			.add("junit-launcher", Dependency.withCoordinates("org.junit.platform", "junit-platform-launcher")
+				.scope(DependencyScope.TEST_RUNTIME));
 	}
 
 	@Bean
-	public DefaultMavenBuildCustomizer initializrMetadataMavenBuildCustomizer(ProjectDescription description,
-			InitializrMetadata metadata) {
-		return new DefaultMavenBuildCustomizer(description, metadata);
+	public DefaultStarterBuildCustomizer defaultStarterContributor(InitializrMetadata metadata,
+			ProjectDescription projectDescription) {
+		return new DefaultStarterBuildCustomizer(metadata, projectDescription);
 	}
 
 	@Bean
 	@ConditionalOnPackaging(WarPackaging.ID)
-	public WarPackagingWebStarterBuildCustomizer warPackagingWebStarterBuildCustomizer(InitializrMetadata metadata) {
-		return new WarPackagingWebStarterBuildCustomizer(metadata);
+	public WarPackagingWebStarterBuildCustomizer warPackagingWebStarterBuildCustomizer(InitializrMetadata metadata,
+			ProjectDescription projectDescription) {
+		return new WarPackagingWebStarterBuildCustomizer(metadata, projectDescription);
 	}
 
 	@Bean
