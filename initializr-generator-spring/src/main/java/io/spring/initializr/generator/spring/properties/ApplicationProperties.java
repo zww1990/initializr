@@ -78,4 +78,7 @@ public class ApplicationProperties {
 		this.properties.put(key, value);
 	}
 
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
 }
