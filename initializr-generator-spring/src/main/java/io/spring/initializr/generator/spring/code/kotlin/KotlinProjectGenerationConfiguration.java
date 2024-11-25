@@ -57,31 +57,32 @@ public class KotlinProjectGenerationConfiguration {
 
 	private final ProjectDescription description;
 
-	private final IndentingWriterFactory indentingWriterFactory;
-
-	public KotlinProjectGenerationConfiguration(ProjectDescription description,
-			IndentingWriterFactory indentingWriterFactory) {
+	public KotlinProjectGenerationConfiguration(ProjectDescription description) {
 		this.description = description;
-		this.indentingWriterFactory = indentingWriterFactory;
 	}
 
 	@Bean
-	public MainSourceCodeProjectContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> mainKotlinSourceCodeProjectContributor(
+	KotlinSourceCodeWriter kotlinSourceCodeWriter(IndentingWriterFactory indentingWriterFactory) {
+		return new KotlinSourceCodeWriter(this.description.getLanguage(), indentingWriterFactory);
+	}
+
+	@Bean
+	MainSourceCodeProjectContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> mainKotlinSourceCodeProjectContributor(
 			ObjectProvider<MainApplicationTypeCustomizer<?>> mainApplicationTypeCustomizers,
 			ObjectProvider<MainCompilationUnitCustomizer<?, ?>> mainCompilationUnitCustomizers,
-			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
-		return new MainSourceCodeProjectContributor<>(this.description, KotlinSourceCode::new,
-				new KotlinSourceCodeWriter(this.indentingWriterFactory), mainApplicationTypeCustomizers,
-				mainCompilationUnitCustomizers, mainSourceCodeCustomizers);
+			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers,
+			KotlinSourceCodeWriter kotlinSourceCodeWriter) {
+		return new MainSourceCodeProjectContributor<>(this.description, KotlinSourceCode::new, kotlinSourceCodeWriter,
+				mainApplicationTypeCustomizers, mainCompilationUnitCustomizers, mainSourceCodeCustomizers);
 	}
 
 	@Bean
-	public TestSourceCodeProjectContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> testKotlinSourceCodeProjectContributor(
+	TestSourceCodeProjectContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> testKotlinSourceCodeProjectContributor(
 			ObjectProvider<TestApplicationTypeCustomizer<?>> testApplicationTypeCustomizers,
-			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers) {
-		return new TestSourceCodeProjectContributor<>(this.description, KotlinSourceCode::new,
-				new KotlinSourceCodeWriter(this.indentingWriterFactory), testApplicationTypeCustomizers,
-				testSourceCodeCustomizers);
+			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers,
+			KotlinSourceCodeWriter kotlinSourceCodeWriter) {
+		return new TestSourceCodeProjectContributor<>(this.description, KotlinSourceCode::new, kotlinSourceCodeWriter,
+				testApplicationTypeCustomizers, testSourceCodeCustomizers);
 	}
 
 	@Bean
